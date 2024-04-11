@@ -1,0 +1,121 @@
+
+app:
+  name: PedidosApp-API Local
+  description: "PedidosApp API Local"
+  version: "1.0.0"
+  base-path: /api
+
+api:
+  prefix.v1: ${app.base-path}/v1
+  security:
+    token:
+      secret: ${PEDIDOSAPP_TOKEN_SECRET:PEDIDOSAPP123}
+
+spring:
+  config.activate.on-profile: localhost
+  application.name: ${app.name}
+  data.rest.base-path: ${app.base-path}
+
+  flyway:
+    baseline-on-migrate: true
+    enabled: false
+    locations: classpath:db/migration
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+    min-response-size: 1
+    mime-types: text/html,
+      text/xml,
+      text/plain,
+      text/css,
+      text/javascript,
+      application/javascript,
+      application/json,
+      application/xml,
+      application/pdf,
+      image/png,
+      image/jpeg,
+      image/svg+xml
+
+logging:
+  level:
+    root: 'INFO'
+    org.hibernate.type.descriptor.sql.BasicBinder: 'TRACE'
+    org.hibernate.type.descriptor.sql.BasicExtractor: 'OFF'
+    org.springframework.web.servlet.DispatcherServlet: 'DEBUG'
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: 'DEBUG'
+
+---
+
+app:
+  name: PedidosApp-API Docker
+  description: "PedidosApp API Docker"
+  version: "1.0.0"
+  base-path: /api
+
+api:
+  prefix.v1: ${app.base-path}/v1
+  security:
+    token:
+      secret: ${PEDIDOSAPP_TOKEN_SECRET:PEDIDOSAPP123}
+
+spring:
+  config.activate.on-profile: docker
+  application.name: ${app.name}
+  data.rest.base-path: ${app.base-path}
+
+  flyway:
+    baseline-on-migrate: true
+    enabled: false
+    locations: classpath:db/migration
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  datasource:
+    url: jdbc:postgresql://${PEDIDOSAPP_PG_URL}/${PEDIDOSAPP_PG_DATABASE}
+    username: ${PEDIDOSAPP_PG_USERNAME}
+    password: ${PEDIDOSAPP_PG_PASSWORD}
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  http2:
+    enabled: true
+  compression:
+    enabled: true
+    min-response-size: 1
+    mime-types: text/html,
+      text/xml,
+      text/plain,
+      text/css,
+      text/javascript,
+      application/javascript,
+      application/json,
+      application/xml,
+      application/pdf,
+      image/png,
+      image/jpeg,
+      image/svg+xml
+
+---
