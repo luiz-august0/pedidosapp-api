@@ -4,7 +4,8 @@ CREATE TABLE stock (
     order_id INT,
     product_id INT NOT NULL,
     quantity NUMERIC NOT NULL,
-    entry BOOLEAN NOT NULL
+    entry BOOLEAN NOT NULL,
+    observation VARCHAR(150) NOT NULL
 );
 
 ALTER TABLE stock ADD CONSTRAINT fk_stock_purchase_order

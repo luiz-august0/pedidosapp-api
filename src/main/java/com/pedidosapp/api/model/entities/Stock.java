@@ -36,6 +36,9 @@ public class Stock extends AbstractEntity {
     @Column(nullable = false, name = "entry")
     private Boolean entry;
 
+    @Column(nullable = false, name = "observation", length = 150)
+    private String observation;
+
     @Override
     public String getPortugueseClassName() {
         return "estoque";
