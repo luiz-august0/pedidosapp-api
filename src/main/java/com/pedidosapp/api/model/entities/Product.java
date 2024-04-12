@@ -18,10 +18,12 @@ import java.util.List;
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Product extends AbstractEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @SequenceGenerator(name = "id_product", sequenceName = "gen_id_product", allocationSize = 1, schema = "public")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_product")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -31,7 +33,7 @@ public class Product extends AbstractEntity {
     @Column(nullable = false, name = "unitary_value")
     private BigDecimal unitaryValue;
 
-    @Column(nullable = false)
+    @Column(name = "active", nullable = false)
     private Boolean active;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,13 +1,15 @@
 package com.pedidosapp.api.config.multitenancy;
 
+import com.pedidosapp.api.utils.StringUtil;
+
 public class TenantContext {
 
-    final public static String DEFAULT_TENANT = "public";
+    public final static String DEFAULT_TENANT = "public";
 
     private static final ThreadLocal<String> currentTenant = ThreadLocal.withInitial(() -> DEFAULT_TENANT);
 
     public static void setCurrentTenant(String tenant) {
-        if (tenant != null) {
+        if (StringUtil.isNotNullOrEmpty(tenant)) {
             currentTenant.set(tenant);
         } else {
             currentTenant.set(DEFAULT_TENANT);

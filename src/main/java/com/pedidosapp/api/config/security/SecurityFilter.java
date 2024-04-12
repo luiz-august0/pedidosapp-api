@@ -2,17 +2,19 @@ package com.pedidosapp.api.config.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.pedidosapp.api.config.multitenancy.TenantContext;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.repository.UserRepository;
 import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
 import com.pedidosapp.api.service.exceptions.enums.EnumGenericsException;
 import com.pedidosapp.api.service.security.TokenService;
-import com.pedidosapp.api.utils.Utils;
+import com.pedidosapp.api.utils.StringUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -35,13 +37,18 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
-        var token = recoverToken(request);
+        String token = recoverToken(request);
+
         try {
-            if (Utils.isNotEmpty(token)) {
-                var login = tokenService.validateToken(token);
+            if (StringUtil.isNotNullOrEmpty(token)) {
+                String login = tokenService.validateToken(token);
+
+                TenantContext.clear();
+                TenantContext.setCurrentTenant(tokenService.getAudienceFromToken(token));
+
                 User user = userRepository.findByLogin(login);
 
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 

@@ -19,7 +19,9 @@ import java.util.List;
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class PurchaseOrder extends AbstractEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @SequenceGenerator(name = "id_purchase_order", sequenceName = "gen_id_purchase_order", allocationSize = 1, schema = "public")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_purchase_order")
     private Integer id;
 
     @JoinColumn(name = "customer_id")

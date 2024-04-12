@@ -12,7 +12,9 @@ import lombok.*;
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class ProductSupplier extends AbstractEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @SequenceGenerator(name = "id_product_supplier", sequenceName = "gen_id_product_supplier", allocationSize = 1, schema = "public")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_product_supplier")
     private Integer id;
 
     @JoinColumn(name = "product_id", nullable = false)

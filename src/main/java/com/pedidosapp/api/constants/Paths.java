@@ -1,4 +1,4 @@
-package com.pedidosapp.api.constants.paths;
+package com.pedidosapp.api.constants;
 
 public class Paths {
 

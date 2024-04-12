@@ -13,6 +13,8 @@ public class CustomerDTO extends AbstractDTO<Customer> {
 
     private String name;
 
+    private String email;
+
     private String cnpj;
 
     private String cpf;

@@ -1,12 +1,6 @@
-CREATE TABLE stock (
-    id SERIAL UNIQUE PRIMARY KEY,
-    purchase_order_id INT,
-    order_id INT,
-    product_id INT NOT NULL,
-    quantity NUMERIC NOT NULL,
-    entry BOOLEAN NOT NULL,
-    observation VARCHAR(150) NOT NULL
-);
+CREATE TABLE IF NOT EXISTS stock () INHERITS (public.stock);
+
+ALTER TABLE stock ADD CONSTRAINT pk_stock PRIMARY KEY (id);
 
 ALTER TABLE stock ADD CONSTRAINT fk_stock_purchase_order
 FOREIGN KEY (purchase_order_id) REFERENCES purchase_order (id);

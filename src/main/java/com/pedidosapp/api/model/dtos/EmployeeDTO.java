@@ -13,6 +13,8 @@ public class EmployeeDTO extends AbstractDTO<Employee> {
 
     private String name;
 
+    private String email;
+
     private String cpf;
 
     private String contact;

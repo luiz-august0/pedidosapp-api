@@ -1,8 +1,8 @@
 package com.pedidosapp.api.service;
 
-import com.pedidosapp.api.model.dtos.RegisterDTO;
 import com.pedidosapp.api.model.dtos.UserDTO;
 import com.pedidosapp.api.model.entities.User;
+import com.pedidosapp.api.model.records.RegisterRecord;
 import com.pedidosapp.api.repository.UserRepository;
 import com.pedidosapp.api.service.validators.UserValidator;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +24,11 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
         this.validator = new UserValidator(repository);
     }
 
-    public ResponseEntity register(RegisterDTO registerDTO) {
-        validator.validate(registerDTO);
+    public ResponseEntity register(RegisterRecord registerRecord) {
+        validator.validate(registerRecord);
 
-        String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
-        User user = new User(registerDTO.login(), encryptedPassword, registerDTO.role());
+        String encryptedPassword = new BCryptPasswordEncoder().encode(registerRecord.password());
+        User user = new User(registerRecord.login(), encryptedPassword, registerRecord.role());
         repository.save(user);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
