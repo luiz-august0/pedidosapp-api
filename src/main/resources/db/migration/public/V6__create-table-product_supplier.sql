@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS public.product_supplier (
     id INT4 NOT NULL,
     product_id INT NOT NULL,
-    supplier_id INT NOT NULL
+    supplier_id INT NOT NULL,
+    schema varchar(100)
 );
 
 CREATE SEQUENCE IF NOT EXISTS public.gen_id_product_supplier
@@ -19,3 +20,5 @@ FOREIGN KEY (product_id) REFERENCES public.product (id);
 
 ALTER TABLE public.product_supplier ADD CONSTRAINT fk_product_supplier_supplier
 FOREIGN KEY (supplier_id) REFERENCES public.supplier (id);
+
+CREATE TRIGGER tr_set_schema_product_supplier BEFORE INSERT ON product_supplier FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_schema();

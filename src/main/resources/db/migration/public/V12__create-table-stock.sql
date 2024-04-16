@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS public.stock (
     product_id INT NOT NULL,
     quantity NUMERIC NOT NULL,
     entry BOOLEAN NOT NULL,
-    observation VARCHAR(150) NOT NULL
+    observation VARCHAR(150) NOT NULL,
+    schema varchar(100)
 );
 
 CREATE SEQUENCE IF NOT EXISTS public.gen_id_stock
@@ -26,3 +27,5 @@ FOREIGN KEY (order_id) REFERENCES public.orders (id);
 
 ALTER TABLE public.stock ADD CONSTRAINT fk_stock_product
 FOREIGN KEY (product_id) REFERENCES public.product (id);
+
+CREATE TRIGGER tr_set_schema_stock BEFORE INSERT ON stock FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_schema();

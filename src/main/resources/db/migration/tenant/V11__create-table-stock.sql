@@ -10,3 +10,5 @@ FOREIGN KEY (order_id) REFERENCES orders (id);
 
 ALTER TABLE stock ADD CONSTRAINT fk_stock_product
 FOREIGN KEY (product_id) REFERENCES product (id);
+
+CREATE TRIGGER tr_set_schema_stock BEFORE INSERT ON stock FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_schema();

@@ -10,3 +10,5 @@ FOREIGN KEY (user_id) REFERENCES users (id);
 
 ALTER TABLE purchase_order ADD CONSTRAINT fk_purchase_order_orders
 FOREIGN KEY (order_id) REFERENCES orders (id);
+
+CREATE TRIGGER tr_set_schema_purchase_order BEFORE INSERT ON purchase_order FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_schema();

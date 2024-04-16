@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS public.purchase_order_item (
     unitary_value NUMERIC NOT NULL,
     amount NUMERIC NOT NULL,
     discount NUMERIC NOT NULL,
-    addition NUMERIC NOT NULL
+    addition NUMERIC NOT NULL,
+    schema varchar(100)
 );
 
 CREATE SEQUENCE IF NOT EXISTS public.gen_id_purchase_order_item
@@ -24,3 +25,5 @@ FOREIGN KEY (purchase_order_id) REFERENCES public.purchase_order (id);
 
 ALTER TABLE public.purchase_order_item ADD CONSTRAINT fk_purchase_order_item_product
 FOREIGN KEY (product_id) REFERENCES public.product (id);
+
+CREATE TRIGGER tr_set_schema_purchase_order_item BEFORE INSERT ON purchase_order_item FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_schema();

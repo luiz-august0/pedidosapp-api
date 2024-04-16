@@ -7,3 +7,5 @@ FOREIGN KEY (product_id) REFERENCES product (id);
 
 ALTER TABLE product_supplier ADD CONSTRAINT fk_product_supplier_supplier
 FOREIGN KEY (supplier_id) REFERENCES supplier (id);
+
+CREATE TRIGGER tr_set_schema_product_supplier BEFORE INSERT ON product_supplier FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_schema();

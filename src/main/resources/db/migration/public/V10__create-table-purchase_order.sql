@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS public.purchase_order (
     discount NUMERIC NOT NULL,
     addition NUMERIC NOT NULL,
     status VARCHAR(50) NOT NULL,
-    inclusion_date TIMESTAMP NOT NULL
+    inclusion_date TIMESTAMP NOT NULL,
+    schema varchar(100)
 );
 
 CREATE SEQUENCE IF NOT EXISTS public.gen_id_purchase_order
@@ -28,3 +29,5 @@ FOREIGN KEY (user_id) REFERENCES public.users (id);
 
 ALTER TABLE public.purchase_order ADD CONSTRAINT fk_purchase_order_orders
 FOREIGN KEY (order_id) REFERENCES public.orders (id);
+
+CREATE TRIGGER tr_set_schema_purchase_order BEFORE INSERT ON purchase_order FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_schema();

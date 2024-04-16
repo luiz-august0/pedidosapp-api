@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS public.product (
     description TEXT NOT NULL,
     unit VARCHAR(50) NOT NULL,
     unitary_value NUMERIC NOT NULL,
-    active BOOLEAN NOT NULL DEFAULT TRUE
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    schema varchar(100)
 );
 
 CREATE SEQUENCE IF NOT EXISTS public.gen_id_product
@@ -15,3 +16,5 @@ CREATE SEQUENCE IF NOT EXISTS public.gen_id_product
     NO CYCLE;
 
 ALTER TABLE public.product ADD CONSTRAINT pk_product PRIMARY KEY (id);
+
+CREATE TRIGGER tr_set_schema_product BEFORE INSERT ON product FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_schema();
