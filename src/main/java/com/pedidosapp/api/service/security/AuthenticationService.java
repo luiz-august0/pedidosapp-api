@@ -1,7 +1,7 @@
 package com.pedidosapp.api.service.security;
 
 import com.pedidosapp.api.config.multitenancy.TenantContext;
-import com.pedidosapp.api.converter.Converter;
+import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.beans.TokenBean;
 import com.pedidosapp.api.model.dtos.EmployeeDTO;
 import com.pedidosapp.api.model.entities.User;

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractAllGetController<Service extends AbstractService, DTO extends AbstractDTO> implements IAbstractAllGetController<DTO>, Serializable {
     private final Service service;
@@ -20,12 +21,12 @@ public abstract class AbstractAllGetController<Service extends AbstractService, 
         return service.findAll();
     }
 
-    public List<DTO> findAllFiltered(DTO dto) {
-        return service.findAllFiltered(dto);
+    public List<DTO> findAllFiltered(Map<String, Object> filters) {
+        return service.findAllFiltered(filters);
     };
 
-    public Page<DTO> findAllFilteredAndPageable(DTO dto, Pageable pageable) {
-        return service.findAllFilteredAndPageable(dto, pageable);
+    public Page<DTO> findAllFilteredAndPageable(Map<String, Object> filters, Pageable pageable) {
+        return service.findAllFilteredAndPageable(filters, pageable);
     };
 
     public DTO findById(Integer id) {

@@ -1,6 +1,6 @@
 package com.pedidosapp.api.service;
 
-import com.pedidosapp.api.converter.Converter;
+import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.ProductDTO;
 import com.pedidosapp.api.model.entities.Product;
 import com.pedidosapp.api.model.entities.ProductSupplier;

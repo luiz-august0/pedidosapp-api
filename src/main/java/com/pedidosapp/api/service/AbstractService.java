@@ -1,6 +1,7 @@
 package com.pedidosapp.api.service;
 
-import com.pedidosapp.api.converter.Converter;
+import com.pedidosapp.api.infrastructure.converter.Converter;
+import com.pedidosapp.api.infrastructure.specs.SpecificationBuilder;
 import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.model.entities.AbstractEntity;
 import com.pedidosapp.api.model.entities.User;
@@ -19,13 +20,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
 public abstract class AbstractService
         <Repository extends JpaRepository & PagingAndSortingRepository & JpaSpecificationExecutor,
-                Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>, Validator extends AbstractValidator>
-{
+                Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>, Validator extends AbstractValidator> {
     private final Repository repository;
 
     public final Entity entity;
@@ -45,12 +46,12 @@ public abstract class AbstractService
         return Converter.convertListEntityToDTO(repository.findAll(), dto.getClass());
     }
 
-    public List<DTO> findAllFiltered(DTO dto) {
-        return Converter.convertListEntityToDTO(repository.findAll(dto.toSpec((Entity) Converter.convertDTOToEntity(dto, entity.getClass()))), dto.getClass());
+    public List<DTO> findAllFiltered(Map<String, Object> filters) {
+        return Converter.convertListEntityToDTO(repository.findAll(SpecificationBuilder.toSpec(filters)), dto.getClass());
     }
 
-    public Page<DTO> findAllFilteredAndPageable(DTO dto, Pageable pageable) {
-        return Converter.convertPageEntityToDTO(repository.findAll(dto.toSpec((Entity) Converter.convertDTOToEntity(dto, entity.getClass())), pageable), dto.getClass());
+    public Page<DTO> findAllFilteredAndPageable(Map<String, Object> filters, Pageable pageable) {
+        return Converter.convertPageEntityToDTO(repository.findAll(SpecificationBuilder.toSpec(filters), pageable), dto.getClass());
     }
 
     public Entity findAndValidate(Integer id) {
