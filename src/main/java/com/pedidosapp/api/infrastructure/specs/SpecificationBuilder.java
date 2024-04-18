@@ -3,13 +3,11 @@ package com.pedidosapp.api.infrastructure.specs;
 import com.pedidosapp.api.model.entities.AbstractEntity;
 import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
 import com.pedidosapp.api.utils.Utils;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +40,7 @@ public class SpecificationBuilder {
                                                                             EnumSpecification specification) {
         try {
             if (Utils.isNotEmpty(fieldValue)) {
-                Path path = root.get(fieldName);
+                Path path = getPathFromField(fieldName, root);
 
                 Predicate predicate = PredicateBuilder.createPredicate(criteriaBuilder, path, fieldValue, specification);
 
@@ -53,5 +51,32 @@ public class SpecificationBuilder {
         } catch (Exception e) {
             throw new ApplicationGenericsException(e.getMessage());
         }
+    }
+
+    private static <Entity extends AbstractEntity> Path getPathFromField(String fieldName, Root<Entity> root) {
+        List<String> fields = Arrays.stream(fieldName.split("\\.")).toList();
+
+        if (fields.size() <= 1) {
+            return root.get(fieldName);
+        } else {
+            return getPathJoinFromFields(fields, root);
+        }
+
+    }
+
+    private static <Entity extends AbstractEntity> Path getPathJoinFromFields(List<String> fields, Root<Entity> root) {
+        Join<Entity, Entity> join = root.join(fields.getFirst(), JoinType.LEFT);
+
+        for (String field : fields) {
+            if (!fields.getFirst().equals(field)) {
+                if (fields.getLast().equals(field)) {
+                    return join.get(field);
+                } else {
+                    join = join.join(field, JoinType.LEFT);
+                }
+            }
+        }
+
+        return join.get(fields.getLast());
     }
 }
