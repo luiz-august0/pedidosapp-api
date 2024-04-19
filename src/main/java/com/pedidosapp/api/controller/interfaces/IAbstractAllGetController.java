@@ -15,10 +15,10 @@ public interface IAbstractAllGetController<DTO extends AbstractDTO> {
     List<DTO> findAll();
 
     @GetMapping("/filter")
-    List<DTO> findAllFiltered(@RequestParam(required = false) Map<String, Object> filters);
+    List<DTO> findAllFiltered(Pageable pageable, @RequestParam(required = false) Map<String, Object> filters);
 
     @GetMapping("/filter/page")
-    Page<DTO> findAllFilteredAndPageable(@RequestParam(required = false) Map<String, Object> filters, Pageable pageable);
+    Page<DTO> findAllFilteredAndPageable(Pageable pageable, @RequestParam(required = false) Map<String, Object> filters);
 
     @GetMapping("/{id}")
     DTO findById(@PathVariable("id") Integer id);

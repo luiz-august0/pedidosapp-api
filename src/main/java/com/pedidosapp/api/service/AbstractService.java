@@ -46,11 +46,11 @@ public abstract class AbstractService
         return Converter.convertListEntityToDTO(repository.findAll(), dto.getClass());
     }
 
-    public List<DTO> findAllFiltered(Map<String, Object> filters) {
-        return Converter.convertListEntityToDTO(repository.findAll(SpecificationBuilder.toSpec(filters)), dto.getClass());
+    public List<DTO> findAllFiltered(Pageable pageable, Map<String, Object> filters) {
+        return Converter.convertListEntityToDTO(repository.findAll(SpecificationBuilder.toSpec(filters), pageable.getSort()), dto.getClass());
     }
 
-    public Page<DTO> findAllFilteredAndPageable(Map<String, Object> filters, Pageable pageable) {
+    public Page<DTO> findAllFilteredAndPageable(Pageable pageable, Map<String, Object> filters) {
         return Converter.convertPageEntityToDTO(repository.findAll(SpecificationBuilder.toSpec(filters), pageable), dto.getClass());
     }
 

@@ -17,14 +17,16 @@ public class SpecificationBuilder {
             List<Predicate> predicates = new ArrayList<>();
 
             filters.forEach((filterKey, filterValue) -> {
-                String prefix = filterKey.substring(filterKey.indexOf(":"), filterKey.lastIndexOf(":") + 1);
-                String fieldName = filterKey.substring(0, filterKey.indexOf(":"));
-                EnumSpecification specification = EnumSpecification.getEnumByPrefix(prefix);
+                if (filterKey.contains(":")) {
+                    String prefix = filterKey.substring(filterKey.indexOf(":"), filterKey.lastIndexOf(":") + 1);
+                    String fieldName = filterKey.substring(0, filterKey.indexOf(":"));
+                    EnumSpecification specification = EnumSpecification.getEnumByPrefix(prefix);
 
-                try {
-                    createSpecification(predicates, filterValue, fieldName, root, criteriaBuilder, specification);
-                } catch (Exception e) {
-                    throw new ApplicationGenericsException(e.getMessage());
+                    try {
+                        createSpecification(predicates, filterValue, fieldName, root, criteriaBuilder, specification);
+                    } catch (Exception e) {
+                        throw new ApplicationGenericsException(e.getMessage());
+                    }
                 }
             });
 

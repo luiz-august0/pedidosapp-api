@@ -21,13 +21,13 @@ public abstract class AbstractAllGetController<Service extends AbstractService, 
         return service.findAll();
     }
 
-    public List<DTO> findAllFiltered(Map<String, Object> filters) {
-        return service.findAllFiltered(filters);
-    };
+    public List<DTO> findAllFiltered(Pageable pageable, Map<String, Object> filters) {
+        return service.findAllFiltered(pageable, filters);
+    }
 
-    public Page<DTO> findAllFilteredAndPageable(Map<String, Object> filters, Pageable pageable) {
-        return service.findAllFilteredAndPageable(filters, pageable);
-    };
+    public Page<DTO> findAllFilteredAndPageable(Pageable pageable, Map<String, Object> filters) {
+        return service.findAllFilteredAndPageable(pageable, filters);
+    }
 
     public DTO findById(Integer id) {
         return (DTO) service.findDTOAndValidate(id);
