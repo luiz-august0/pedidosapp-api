@@ -23,13 +23,15 @@ import java.util.List;
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class User extends AbstractEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @SequenceGenerator(name = "id_user", sequenceName = "gen_id_user", allocationSize = 1, schema = "public")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_user")
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "login", nullable = false, unique = true)
     private String login;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     @JsonIgnore
     private String password;
 
@@ -45,7 +47,7 @@ public class User extends AbstractEntity implements UserDetails {
     @OneToMany(mappedBy = "user")
     List<Order> orders;
 
-    @Column(nullable = false)
+    @Column(name = "active", nullable = false)
     private Boolean active;
 
     public User(String login, String password, EnumUserRole role) {

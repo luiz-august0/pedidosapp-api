@@ -5,7 +5,7 @@ import com.pedidosapp.api.model.dtos.EmployeeDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.pedidosapp.api.constants.paths.Paths.prefixPath;
+import static com.pedidosapp.api.constants.Paths.prefixPath;
 
 @RequestMapping(IEmployeeController.PATH)
 public interface IEmployeeController extends IAbstractAllGetController<EmployeeDTO> {

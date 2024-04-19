@@ -1,6 +1,6 @@
 package com.pedidosapp.api.service.validators;
 
-import com.pedidosapp.api.model.dtos.RegisterDTO;
+import com.pedidosapp.api.model.records.RegisterRecord;
 import com.pedidosapp.api.repository.UserRepository;
 import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
 import com.pedidosapp.api.service.exceptions.enums.EnumUnauthorizedException;
@@ -17,9 +17,9 @@ public class UserValidator extends AbstractValidator {
 
         try {
             List<RequiredField> requiredFields = new ArrayList<>();
-            requiredFields.add(new RequiredField(RegisterDTO.class.getDeclaredField("login"), "login"));
-            requiredFields.add(new RequiredField(RegisterDTO.class.getDeclaredField("password"), "senha"));
-            requiredFields.add(new RequiredField(RegisterDTO.class.getDeclaredField("role"), "nivel de acesso"));
+            requiredFields.add(new RequiredField(RegisterRecord.class.getDeclaredField("login"), "login"));
+            requiredFields.add(new RequiredField(RegisterRecord.class.getDeclaredField("password"), "senha"));
+            requiredFields.add(new RequiredField(RegisterRecord.class.getDeclaredField("role"), "nivel de acesso"));
 
             super.addListOfRequiredFields(requiredFields);
         } catch (Exception e) {
@@ -29,10 +29,10 @@ public class UserValidator extends AbstractValidator {
 
     @Override
     public void validate(Object object) {
-        RegisterDTO registerDTO = (RegisterDTO) object;
+        RegisterRecord registerRecord = (RegisterRecord) object;
         super.validate(object);
 
-        if (userRepository.findByLogin(registerDTO.login()) != null)
+        if (userRepository.findByLogin(registerRecord.login()) != null)
             throw new ApplicationGenericsException(EnumUnauthorizedException.USER_ALREADY_REGISTERED);
     }
 }

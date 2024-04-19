@@ -13,25 +13,30 @@ import lombok.*;
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Supplier extends AbstractEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @SequenceGenerator(name = "id_supplier", sequenceName = "gen_id_supplier", allocationSize = 1, schema = "public")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_supplier")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "social_reason")
     private String socialReason;
 
-    @Column(length = 14, unique = true)
+    @Column(name = "cnpj", length = 14, unique = true)
     private String cnpj;
 
-    @Column(length = 11, unique = true)
+    @Column(name = "cpf", length = 11, unique = true)
     private String cpf;
 
-    @Column(length = 20)
+    @Column(name = "contact", length = 20)
     private String contact;
 
-    @Column(nullable = false)
+    @Column(name = "active", nullable = false)
     private Boolean active;
 
     @PrePersist

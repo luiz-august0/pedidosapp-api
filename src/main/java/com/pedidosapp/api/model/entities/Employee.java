@@ -14,23 +14,28 @@ import lombok.*;
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Employee extends AbstractEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @SequenceGenerator(name = "id_employee", sequenceName = "gen_id_employee", allocationSize = 1, schema = "public")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_employee")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "name", length = 110, nullable = false)
     private String name;
 
-    @Column(length = 11, unique = true)
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "cpf", length = 11, unique = true)
     private String cpf;
 
-    @Column(length = 20)
+    @Column(name = "contact", length = 20)
     private String contact;
 
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     @OneToOne
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "active", nullable = false)
     private Boolean active;
 
     @PrePersist

@@ -1,4 +1,4 @@
-package com.pedidosapp.api.config.datasource;
+package com.pedidosapp.api.config.flyway;
 
 import com.pedidosapp.api.config.multitenancy.TenantContext;
 import com.pedidosapp.api.model.entities.User;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class DataSourceLoad {
+public class FlywayMigration {
     @Autowired
     DataSource dataSource;
 
@@ -36,7 +36,7 @@ public class DataSourceLoad {
         try {
             ResultSet resultSet = dataSource.getConnection().createStatement().executeQuery(
                     " select schema_name as schema from information_schema.schemata " +
-                            " where schema_name <> 'information_schema' and substring(schema_name, 1, 2) <> 'pg' "
+                            " where schema_name not in ('information_schema', 'public') and substring(schema_name, 1, 2) <> 'pg' "
             );
 
             while (resultSet.next()) schemas.add(resultSet.getString(1));
@@ -45,9 +45,12 @@ public class DataSourceLoad {
             e.printStackTrace();
         }
 
+        flywayMigrate("public");
+
         for (String schema : schemas) {
             TenantContext.clear();
-            Flyway.configure().dataSource(dataSource).schemas(schema).load().migrate();
+
+            flywayMigrate(schema);
 
             TenantContext.setCurrentTenant(schema);
             User user = userRepository.findByLogin("admin");
@@ -59,5 +62,14 @@ public class DataSourceLoad {
                 userRepository.save(user);
             }
         }
+    }
+
+    private void flywayMigrate(String schema) {
+        Flyway.configure()
+                .dataSource(dataSource)
+                .schemas(schema)
+                .locations(schema.equals("public") ? "classpath:db/migration/public" : "classpath:db/migration/tenant")
+                .load()
+                .migrate();
     }
 }

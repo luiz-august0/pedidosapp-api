@@ -26,6 +26,7 @@ public class TokenService {
     private Instant genExpirationDateAccessToken() {
         return LocalDateTime.now().plusDays(1).toInstant(ZoneOffset.of("-03:00"));
     }
+
     private Instant genExpirationDateRefreshToken() {
         return LocalDateTime.now().plusDays(30).toInstant(ZoneOffset.of("-03:00"));
     }
@@ -79,6 +80,16 @@ public class TokenService {
             } else {
                 throw new ApplicationGenericsException(e.getMessage());
             }
+        }
+    }
+
+    public String getAudienceFromToken(String token) {
+        try {
+            return JWT.decode(token)
+                    .getAudience()
+                    .getFirst();
+        } catch (Exception e) {
+            throw new ApplicationGenericsException(e.getMessage());
         }
     }
 }

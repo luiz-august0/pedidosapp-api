@@ -5,18 +5,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IAbstractAllGetController<DTO extends AbstractDTO> {
     @GetMapping
     List<DTO> findAll();
 
     @GetMapping("/filter")
-    List<DTO> findAllFiltered(DTO dto);
+    List<DTO> findAllFiltered(Pageable pageable, @RequestParam(required = false) Map<String, Object> filters);
 
     @GetMapping("/filter/page")
-    Page<DTO> findAllFilteredAndPageable(DTO dto, Pageable pageable);
+    Page<DTO> findAllFilteredAndPageable(Pageable pageable, @RequestParam(required = false) Map<String, Object> filters);
 
     @GetMapping("/{id}")
     DTO findById(@PathVariable("id") Integer id);

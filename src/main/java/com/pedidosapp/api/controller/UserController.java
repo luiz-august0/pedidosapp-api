@@ -1,7 +1,7 @@
 package com.pedidosapp.api.controller;
 
 import com.pedidosapp.api.controller.interfaces.IUserController;
-import com.pedidosapp.api.model.dtos.RegisterDTO;
+import com.pedidosapp.api.model.records.RegisterRecord;
 import com.pedidosapp.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ public class UserController implements IUserController, Serializable {
     private UserService service;
 
     @Override
-    public ResponseEntity register(RegisterDTO registerDTO) {
-        return service.register(registerDTO);
+    public ResponseEntity register(RegisterRecord registerRecord) {
+        return service.register(registerRecord);
     }
 }

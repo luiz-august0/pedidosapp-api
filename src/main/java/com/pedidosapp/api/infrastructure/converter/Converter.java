@@ -1,4 +1,4 @@
-package com.pedidosapp.api.converter;
+package com.pedidosapp.api.infrastructure.converter;
 
 import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.model.entities.AbstractEntity;

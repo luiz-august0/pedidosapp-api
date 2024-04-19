@@ -1,9 +1,12 @@
 package com.pedidosapp.api.service;
 
-import com.pedidosapp.api.converter.Converter;
+import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.OrderDTO;
+import com.pedidosapp.api.model.dtos.OrderItemDTO;
+import com.pedidosapp.api.model.dtos.StockDTO;
 import com.pedidosapp.api.model.entities.Order;
 import com.pedidosapp.api.model.entities.OrderItem;
+import com.pedidosapp.api.model.enums.EnumObservationStock;
 import com.pedidosapp.api.model.enums.EnumStatusOrder;
 import com.pedidosapp.api.repository.OrderRepository;
 import com.pedidosapp.api.service.validators.OrderValidator;
@@ -29,12 +32,15 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
 
     private final UserService userService;
 
-    OrderService(OrderRepository orderRepository, OrderItemService orderItemService, CustomerService customerService, UserService userService) {
+    private final StockService stockService;
+
+    OrderService(OrderRepository orderRepository, OrderItemService orderItemService, CustomerService customerService, UserService userService, StockService stockService) {
         super(orderRepository, new Order(), new OrderDTO(), new OrderValidator());
         this.orderRepository = orderRepository;
         this.orderItemService = orderItemService;
         this.customerService = customerService;
         this.userService = userService;
+        this.stockService = stockService;
         this.orderValidator = new OrderValidator();
     }
 
@@ -52,9 +58,15 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
     @Transactional
     public ResponseEntity<OrderDTO> closeOrder(Integer id) {
         Order order = this.findAndValidate(id);
+
+        orderValidator.validate(order);
+
         order.setStatus(EnumStatusOrder.CLOSED);
 
         order = orderRepository.save(order);
+
+        moveStockOrderItems(order.getItems().stream().map(item -> Converter.convertEntityToDTO(item, OrderItemDTO.class)).toList());
+
         return ResponseEntity.status(HttpStatus.OK).body(Converter.convertEntityToDTO(order, OrderDTO.class));
     }
 
@@ -67,10 +79,10 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
         order.setAddition(BigDecimal.ZERO);
         order.setCustomer(customerService.findAndValidateActive(order.getCustomer().getId()));
         order.setUser(userService.findAndValidateActive(getUserByContext().getId()));
+        order.setStatus(EnumStatusOrder.OPEN);
 
         orderValidator.validate(order);
 
-        order.setStatus(EnumStatusOrder.OPEN);
         order.setItems(new ArrayList<>());
 
         Order orderManaged = orderRepository.save(order);
@@ -88,5 +100,20 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
         orderManaged.setAddition(orderManaged.calculateAddition());
 
         return orderManaged;
+    }
+
+    private void moveStockOrderItems(List<OrderItemDTO> items) {
+        items.forEach(item -> {
+            StockDTO stock = new StockDTO();
+            OrderDTO order = item.getOrder();
+
+            stock.setOrder(order);
+            stock.setProduct(item.getProduct());
+            stock.setEntry(Boolean.FALSE);
+            stock.setQuantity(item.getQuantity());
+            stock.setObservation(EnumObservationStock.ORDER.getObservation() + " " + order.getId());
+
+            stockService.insert(stock);
+        });
     }
 }

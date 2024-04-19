@@ -13,6 +13,8 @@ public class SupplierDTO extends AbstractDTO<Supplier> {
 
     private String name;
 
+    private String email;
+
     private String socialReason;
 
     private String cnpj;

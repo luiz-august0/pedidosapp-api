@@ -4,7 +4,7 @@ import com.pedidosapp.api.model.dtos.PurchaseOrderItemDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.pedidosapp.api.constants.paths.Paths.prefixPath;
+import static com.pedidosapp.api.constants.Paths.prefixPath;
 
 
 @RequestMapping(IPurchaseOrderItemController.PATH)

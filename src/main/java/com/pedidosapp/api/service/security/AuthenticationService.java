@@ -1,15 +1,17 @@
 package com.pedidosapp.api.service.security;
 
 import com.pedidosapp.api.config.multitenancy.TenantContext;
-import com.pedidosapp.api.converter.Converter;
+import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.beans.TokenBean;
-import com.pedidosapp.api.model.dtos.AuthenticationDTO;
 import com.pedidosapp.api.model.dtos.EmployeeDTO;
 import com.pedidosapp.api.model.entities.User;
+import com.pedidosapp.api.model.records.AuthenticationRecord;
 import com.pedidosapp.api.repository.UserRepository;
 import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.service.exceptions.enums.EnumGenericsException;
 import com.pedidosapp.api.service.exceptions.enums.EnumResourceNotFoundException;
 import com.pedidosapp.api.service.exceptions.enums.EnumUnauthorizedException;
+import com.pedidosapp.api.utils.StringUtil;
 import com.pedidosapp.api.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +35,13 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
 
-    public ResponseEntity<TokenBean> login(AuthenticationDTO authenticationDTO) {
-        var loginPassword = new UsernamePasswordAuthenticationToken(authenticationDTO.login(), authenticationDTO.password());
+    public ResponseEntity<TokenBean> login(AuthenticationRecord authenticationRecord) {
+        if (StringUtil.isNullOrEmpty(TenantContext.getCurrentTenant())
+                || TenantContext.getCurrentTenant().equals(TenantContext.DEFAULT_TENANT)) {
+            throw new ApplicationGenericsException(EnumGenericsException.LOGIN_WITHOUT_TENANT);
+        }
+
+        var loginPassword = new UsernamePasswordAuthenticationToken(authenticationRecord.login(), authenticationRecord.password());
         EnumUnauthorizedException userInactiveEnum = EnumUnauthorizedException.USER_INACTIVE;
 
         try {
@@ -62,8 +69,7 @@ public class AuthenticationService {
         } catch (RuntimeException e) {
             if (e.getClass() == BadCredentialsException.class) {
                 throw new ApplicationGenericsException(EnumUnauthorizedException.WRONG_CREDENTIALS);
-            }
-            else {
+            } else {
                 if (e.getMessage().equals(userInactiveEnum.getMessage())) {
                     throw new ApplicationGenericsException(userInactiveEnum);
                 } else {
@@ -74,7 +80,7 @@ public class AuthenticationService {
     }
 
     public ResponseEntity<TokenBean> refreshToken(TokenBean tokenBeanRequest) {
-        User user = null;
+        User user;
         String[] subject = new String(
                 Base64.getDecoder().decode(tokenService.validateToken(tokenBeanRequest.getRefreshToken()).getBytes())
         ).split("-");

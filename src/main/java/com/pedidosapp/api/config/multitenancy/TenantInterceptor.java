@@ -9,17 +9,16 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
 
+import static com.pedidosapp.api.constants.Headers.TENANT_HEADER;
+import static com.pedidosapp.api.constants.Headers.TOKEN_HEADER;
+
 @Component
 public class TenantInterceptor implements WebRequestInterceptor {
-
-    private static final String TENANT_HEADER = "X-Tenant";
-    private static final String TOKEN_HEADER = "Authorization";
-
     @Override
     public void preHandle(WebRequest request) {
         var sessionHeader = request.getHeader(TOKEN_HEADER);
 
-        if (sessionHeader == null) {
+        if (Utils.isEmpty(sessionHeader)) {
             TenantContext.setCurrentTenant(request.getHeader(TENANT_HEADER));
         } else {
             String token = sessionHeader.replace("Bearer ", "");

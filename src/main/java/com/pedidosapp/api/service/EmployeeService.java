@@ -36,7 +36,7 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
         User user = new User(bean.getLogin(), encryptedPassword, EnumUserRole.EMPLOYEE);
         userRepository.save(user);
 
-        Employee employee = new Employee(null, bean.getName(), bean.getCpf(), bean.getContact(), user, true);
+        Employee employee = new Employee(null, bean.getName(), bean.getEmail(), bean.getCpf(), bean.getContact(), user, true);
         employeeRepository.save(employee);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

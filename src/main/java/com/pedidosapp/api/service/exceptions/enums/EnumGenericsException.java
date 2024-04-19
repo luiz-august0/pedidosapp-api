@@ -5,7 +5,8 @@ public enum EnumGenericsException {
     GENERATE_REFRESH_TOKEN("Ocorreu um erro ao gerar o token de atualização"),
     VALIDATE_TOKEN("Ocorreu um erro ao validar o token"),
     EXPIRED_TOKEN("Token expirado, realize o login novamente"),
-    TOKEN_WITHOUT_SCHEMA("Não foi possível localizar schema no token");
+    TOKEN_WITHOUT_SCHEMA("Não foi possível localizar schema no token"),
+    LOGIN_WITHOUT_TENANT("Não foi informado o tenant para a realização do login");
     private final String message;
 
     EnumGenericsException(String message) {

@@ -16,26 +16,31 @@ import java.util.List;
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Customer extends AbstractEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @SequenceGenerator(name = "id_customer", sequenceName = "gen_id_customer", allocationSize = 1, schema = "public")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_customer")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false, length = 110)
     private String name;
 
-    @Column(length = 14, unique = true)
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "cnpj", length = 14, unique = true)
     private String cnpj;
 
-    @Column(length = 11, unique = true)
+    @Column(name = "cpf", length = 11, unique = true)
     private String cpf;
 
-    @Column(length = 20)
+    @Column(name = "contact", length = 20)
     private String contact;
 
     @JsonIgnore
     @OneToMany(mappedBy = "customer")
     List<Order> orders;
 
-    @Column(nullable = false)
+    @Column(name = "active", nullable = false)
     private Boolean active;
 
     @PrePersist

@@ -1,6 +1,6 @@
 package com.pedidosapp.api.config.security;
 
-import com.pedidosapp.api.constants.paths.Paths;
+import com.pedidosapp.api.constants.Paths;
 import com.pedidosapp.api.controller.interfaces.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -15,7 +15,9 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class OrderItem extends AbstractEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @SequenceGenerator(name = "id_order_item", sequenceName = "gen_id_order_item", allocationSize = 1, schema = "public")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_order_item")
     private Integer id;
 
     @JoinColumn(name = "order_id", nullable = false)
