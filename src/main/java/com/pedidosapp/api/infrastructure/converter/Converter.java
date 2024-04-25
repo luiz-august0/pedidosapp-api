@@ -1,18 +1,24 @@
 package com.pedidosapp.api.infrastructure.converter;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.model.entities.AbstractEntity;
+import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.utils.ClassUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.*;
 
 public class Converter {
     private static final ModelMapper mapper = new ModelMapper();
 
     public static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO convertEntityToDTO(Entity entity, Class<DTO> dtoClass) {
-        return mapper.map(entity, dtoClass);
+        DTO dtoMapped = mapperEntityToDTO(entity, dtoClass);
+
+        return dtoMapped;
     }
 
     public static <Entity extends AbstractEntity, DTO extends AbstractDTO> Entity convertDTOToEntity(DTO dto, Class<Entity> entityClass) {
@@ -41,5 +47,62 @@ public class Converter {
                 dtoPage.getPageable(),
                 dtoPage.getTotalElements()
         );
+    }
+
+    private static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO mapperEntityToDTO(Entity entity, Class<DTO> dtoClass) {
+        try {
+            DTO dtoObj = dtoClass.getDeclaredConstructor().newInstance();
+            List<Field> dtoFields = Arrays.stream(dtoClass.getDeclaredFields()).toList().stream().filter(dtoField ->
+                    (!dtoField.isAnnotationPresent(JsonProperty.class)) ||
+                            (dtoField.isAnnotationPresent(JsonProperty.class) && !dtoField.getAnnotation(JsonProperty.class).access().equals(JsonProperty.Access.WRITE_ONLY))
+            ).toList();
+
+            dtoFields.forEach(dtoField -> {
+                try {
+                    Field entityField = entity.getClass().getDeclaredField(dtoField.getName());
+                    entityField.setAccessible(true);
+                    dtoField.setAccessible(true);
+                    Object entityFieldValue = entityField.get(entity);
+
+                    if (entityFieldValue instanceof AbstractEntity) {
+                        DTO dtoFieldValue = mapperEntityToDTO((Entity) entityFieldValue, (Class<DTO>) dtoField.getType());
+                        dtoField.set(dtoObj, dtoFieldValue);
+                    } else if (entityFieldValue instanceof Collection<?> entityCollection) {
+                        if (!entityCollection.isEmpty()) {
+                            Class<?> entityCollectionClass = ClassUtil.getClassFromCollectionField(entityField);
+
+                            if (entityCollectionClass.getSuperclass().equals(AbstractEntity.class)) {
+                                Class<DTO> dtoCollectionClass = (Class<DTO>) ClassUtil.getClassFromCollectionField(dtoField);
+                                Collection<DTO> dtoCollection;
+
+                                if (entityCollection instanceof HashSet<?>) {
+                                    dtoCollection = new HashSet<>();
+                                } else {
+                                    dtoCollection = new ArrayList<>();
+                                }
+
+                                entityCollection.forEach(entityCollectionFieldValue -> {
+                                    DTO dtoFieldValue = mapperEntityToDTO((Entity) entityCollectionFieldValue, dtoCollectionClass);
+                                    dtoCollection.add(dtoFieldValue);
+                                });
+
+                                dtoField.set(dtoObj, dtoCollection);
+                            } else {
+                                dtoField.set(dtoObj, entityFieldValue);
+                            }
+                        }
+                    } else {
+                        dtoField.set(dtoObj, entityFieldValue);
+                    }
+
+                } catch (Exception e) {
+                    throw new ApplicationGenericsException(e.getMessage());
+                }
+            });
+
+            return dtoObj;
+        } catch (Exception e) {
+            throw new ApplicationGenericsException(e.getMessage());
+        }
     }
 }
