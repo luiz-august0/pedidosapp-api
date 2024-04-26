@@ -33,6 +33,6 @@ public class PurchaseOrderDTO extends AbstractDTO<PurchaseOrder> {
 
     private Date inclusionDate;
 
-    List<PurchaseOrderItemDTO> items;
+    private List<PurchaseOrderItemDTO> items;
 
 }

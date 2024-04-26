@@ -31,5 +31,5 @@ public class OrderDTO extends AbstractDTO<Order> {
 
     private Date inclusionDate;
 
-    List<OrderItemDTO> items;
+    private List<OrderItemDTO> items;
 }

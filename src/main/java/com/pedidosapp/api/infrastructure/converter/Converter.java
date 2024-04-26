@@ -1,6 +1,8 @@
 package com.pedidosapp.api.infrastructure.converter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pedidosapp.api.infrastructure.annotations.ObjectFieldsOnly;
 import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.model.entities.AbstractEntity;
 import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
@@ -16,9 +18,16 @@ public class Converter {
     private static final ModelMapper mapper = new ModelMapper();
 
     public static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO convertEntityToDTO(Entity entity, Class<DTO> dtoClass) {
-        DTO dtoMapped = mapperEntityToDTO(entity, dtoClass);
+        try {
+            DTO dtoObj = dtoClass.getDeclaredConstructor().newInstance();
+            List<Field> dtoFields = Arrays.stream(dtoClass.getDeclaredFields()).toList().stream().filter(Converter::doFilterAnnotations).toList();
 
-        return dtoMapped;
+            mapperEntityFieldsToDTOFields(entity, dtoObj, dtoFields);
+
+            return dtoObj;
+        } catch (Exception e) {
+            throw new ApplicationGenericsException(e.getMessage());
+        }
     }
 
     public static <Entity extends AbstractEntity, DTO extends AbstractDTO> Entity convertDTOToEntity(DTO dto, Class<Entity> entityClass) {
@@ -49,60 +58,79 @@ public class Converter {
         );
     }
 
-    private static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO mapperEntityToDTO(Entity entity, Class<DTO> dtoClass) {
+    private static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO mapperEntityFieldsToDTOFields(Entity entity, DTO dtoObj, List<Field> dtoFields) {
+        dtoFields.forEach(dtoField -> {
+            try {
+                Field entityField = entity.getClass().getDeclaredField(dtoField.getName());
+                entityField.setAccessible(true);
+                dtoField.setAccessible(true);
+                Object entityFieldValue = entityField.get(entity);
+
+                if (entityFieldValue instanceof AbstractEntity) {
+                    dtoField.set(dtoObj, getDTOValueFromDTOField((Entity) entityFieldValue, (Class<DTO>) dtoField.getType(), dtoField));
+                } else if (entityFieldValue instanceof Collection<?> entityCollection) {
+                    if (!entityCollection.isEmpty()) {
+                        Class<?> entityCollectionClass = ClassUtil.getClassFromCollectionField(entityField);
+
+                        if (entityCollectionClass.getSuperclass().equals(AbstractEntity.class)) {
+                            Class<DTO> dtoCollectionClass = (Class<DTO>) ClassUtil.getClassFromCollectionField(dtoField);
+                            Collection<DTO> dtoCollection;
+
+                            if (entityCollection instanceof HashSet<?>) {
+                                dtoCollection = new HashSet<>();
+                            } else {
+                                dtoCollection = new ArrayList<>();
+                            }
+
+                            entityCollection.forEach(entityCollectionFieldValue -> {
+                                dtoCollection.add(getDTOValueFromDTOField((Entity) entityCollectionFieldValue, dtoCollectionClass, dtoField));
+                            });
+
+                            dtoField.set(dtoObj, dtoCollection);
+                        } else {
+                            dtoField.set(dtoObj, entityFieldValue);
+                        }
+                    }
+                } else {
+                    dtoField.set(dtoObj, entityFieldValue);
+                }
+
+            } catch (Exception e) {
+                throw new ApplicationGenericsException(e.getMessage());
+            }
+        });
+
+        return dtoObj;
+    }
+
+    private static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO getDTOValueFromDTOField(Entity entity, Class<DTO> dtoClass, Field dtoField) {
         try {
-            DTO dtoObj = dtoClass.getDeclaredConstructor().newInstance();
-            List<Field> dtoFields = Arrays.stream(dtoClass.getDeclaredFields()).toList().stream().filter(dtoField ->
-                    (!dtoField.isAnnotationPresent(JsonProperty.class)) ||
-                            (dtoField.isAnnotationPresent(JsonProperty.class) && !dtoField.getAnnotation(JsonProperty.class).access().equals(JsonProperty.Access.WRITE_ONLY))
+            String[] DTOFields;
+
+            if (dtoField.isAnnotationPresent(ObjectFieldsOnly.class)) {
+                DTOFields = dtoField.getAnnotation(ObjectFieldsOnly.class).value();
+            } else {
+                DTOFields = new String[0];
+            }
+
+            DTO dtoFieldObj = dtoClass.getDeclaredConstructor().newInstance();
+            List<Field> dtoFields = Arrays.stream(dtoClass.getDeclaredFields()).toList().stream().filter(field ->
+                    doFilterAnnotations(field) && (doDTOFieldsFilter(DTOFields, field))
             ).toList();
 
-            dtoFields.forEach(dtoField -> {
-                try {
-                    Field entityField = entity.getClass().getDeclaredField(dtoField.getName());
-                    entityField.setAccessible(true);
-                    dtoField.setAccessible(true);
-                    Object entityFieldValue = entityField.get(entity);
-
-                    if (entityFieldValue instanceof AbstractEntity) {
-                        DTO dtoFieldValue = mapperEntityToDTO((Entity) entityFieldValue, (Class<DTO>) dtoField.getType());
-                        dtoField.set(dtoObj, dtoFieldValue);
-                    } else if (entityFieldValue instanceof Collection<?> entityCollection) {
-                        if (!entityCollection.isEmpty()) {
-                            Class<?> entityCollectionClass = ClassUtil.getClassFromCollectionField(entityField);
-
-                            if (entityCollectionClass.getSuperclass().equals(AbstractEntity.class)) {
-                                Class<DTO> dtoCollectionClass = (Class<DTO>) ClassUtil.getClassFromCollectionField(dtoField);
-                                Collection<DTO> dtoCollection;
-
-                                if (entityCollection instanceof HashSet<?>) {
-                                    dtoCollection = new HashSet<>();
-                                } else {
-                                    dtoCollection = new ArrayList<>();
-                                }
-
-                                entityCollection.forEach(entityCollectionFieldValue -> {
-                                    DTO dtoFieldValue = mapperEntityToDTO((Entity) entityCollectionFieldValue, dtoCollectionClass);
-                                    dtoCollection.add(dtoFieldValue);
-                                });
-
-                                dtoField.set(dtoObj, dtoCollection);
-                            } else {
-                                dtoField.set(dtoObj, entityFieldValue);
-                            }
-                        }
-                    } else {
-                        dtoField.set(dtoObj, entityFieldValue);
-                    }
-
-                } catch (Exception e) {
-                    throw new ApplicationGenericsException(e.getMessage());
-                }
-            });
-
-            return dtoObj;
+            return mapperEntityFieldsToDTOFields(entity, dtoFieldObj, dtoFields);
         } catch (Exception e) {
             throw new ApplicationGenericsException(e.getMessage());
         }
+    }
+
+    private static boolean doFilterAnnotations(Field dtoField) {
+        return ((!dtoField.isAnnotationPresent(JsonProperty.class)) ||
+                (dtoField.isAnnotationPresent(JsonProperty.class) && !dtoField.getAnnotation(JsonProperty.class).access().equals(JsonProperty.Access.WRITE_ONLY))) &&
+                (!dtoField.isAnnotationPresent(JsonIgnore.class));
+    }
+
+    private static boolean doDTOFieldsFilter(String[] DTOFields, Field dtoField) {
+        return DTOFields.length == 0 || Arrays.stream(DTOFields).anyMatch(DTOField -> DTOField.equals(dtoField.getName()));
     }
 }

@@ -1,6 +1,7 @@
 package com.pedidosapp.api.model.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pedidosapp.api.infrastructure.annotations.ObjectFieldsOnly;
 import com.pedidosapp.api.model.entities.OrderItem;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class OrderItemDTO extends AbstractDTO<OrderItem> {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private OrderDTO order;
 
+    @ObjectFieldsOnly({"id", "description", "unit", "unitaryValue"})
     private ProductDTO product;
 
     private BigDecimal quantity;
