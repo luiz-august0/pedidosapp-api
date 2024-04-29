@@ -41,8 +41,7 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
 
     @Override
     @Transactional
-    public ResponseEntity<OrderItemDTO> insert(OrderItemDTO orderItemDTO) {
-        OrderItem orderItem = Converter.convertDTOToEntity(orderItemDTO, OrderItem.class);
+    public ResponseEntity<OrderItemDTO> insert(OrderItem orderItem) {
         prepareInsertOrUpdate(orderItem);
         orderItemValidator.validate(orderItem);
 
@@ -54,9 +53,8 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
 
     @Override
     @Transactional
-    public ResponseEntity<OrderItemDTO> update(Integer id, OrderItemDTO orderItemDTO) {
+    public ResponseEntity<OrderItemDTO> update(Integer id, OrderItem orderItem) {
         OrderItem orderItemOld = super.findAndValidate(id);
-        OrderItem orderItem = Converter.convertDTOToEntity(orderItemDTO, OrderItem.class);
         orderItem.setId(orderItemOld.getId());
         orderItem.setProduct(orderItemOld.getProduct());
 

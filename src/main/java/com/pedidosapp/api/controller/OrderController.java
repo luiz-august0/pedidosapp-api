@@ -1,7 +1,9 @@
 package com.pedidosapp.api.controller;
 
 import com.pedidosapp.api.controller.interfaces.IOrderController;
+import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.OrderDTO;
+import com.pedidosapp.api.model.entities.Order;
 import com.pedidosapp.api.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +19,7 @@ public class OrderController extends AbstractAllGetController<OrderService, Orde
 
     @Override
     public ResponseEntity<OrderDTO> insert(OrderDTO orderDTO) {
-        return service.insert(orderDTO);
+        return service.insert(Converter.convertDTOToEntity(orderDTO, Order.class));
     }
 
     @Override

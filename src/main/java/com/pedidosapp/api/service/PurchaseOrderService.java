@@ -2,10 +2,9 @@ package com.pedidosapp.api.service;
 
 import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.PurchaseOrderDTO;
-import com.pedidosapp.api.model.dtos.PurchaseOrderItemDTO;
-import com.pedidosapp.api.model.dtos.StockDTO;
 import com.pedidosapp.api.model.entities.PurchaseOrder;
 import com.pedidosapp.api.model.entities.PurchaseOrderItem;
+import com.pedidosapp.api.model.entities.Stock;
 import com.pedidosapp.api.model.enums.EnumObservationStock;
 import com.pedidosapp.api.model.enums.EnumStatusOrder;
 import com.pedidosapp.api.repository.PurchaseOrderRepository;
@@ -47,9 +46,7 @@ public class PurchaseOrderService extends AbstractService<PurchaseOrderRepositor
 
     @Override
     @Transactional
-    public ResponseEntity<PurchaseOrderDTO> insert(PurchaseOrderDTO purchaseOrderDTO) {
-        PurchaseOrder purchaseOrder = Converter.convertDTOToEntity(purchaseOrderDTO, PurchaseOrder.class);
-
+    public ResponseEntity<PurchaseOrderDTO> insert(PurchaseOrder purchaseOrder) {
         PurchaseOrder purchaseOrderManaged = prepareInsert(purchaseOrder);
         purchaseOrderRepository.save(purchaseOrderManaged);
 
@@ -66,7 +63,7 @@ public class PurchaseOrderService extends AbstractService<PurchaseOrderRepositor
 
         purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
 
-        moveStockPurchaseOrderItems(purchaseOrder.getItems().stream().map(item -> Converter.convertEntityToDTO(item, PurchaseOrderItemDTO.class)).toList());
+        moveStockPurchaseOrderItems(purchaseOrder.getItems());
 
         return ResponseEntity.status(HttpStatus.OK).body(Converter.convertEntityToDTO(purchaseOrder, PurchaseOrderDTO.class));
     }
@@ -103,16 +100,16 @@ public class PurchaseOrderService extends AbstractService<PurchaseOrderRepositor
         return purchaseOrderManaged;
     }
 
-    private void moveStockPurchaseOrderItems(List<PurchaseOrderItemDTO> items) {
+    private void moveStockPurchaseOrderItems(List<PurchaseOrderItem> items) {
         items.forEach(item -> {
-            StockDTO stock = new StockDTO();
-            PurchaseOrderDTO purchaseOrder = item.getPurchaseOrder();
+            Stock stock = new Stock();
+            PurchaseOrder purchaseOrder = item.getPurchaseOrder();
 
             stock.setPurchaseOrder(purchaseOrder);
             stock.setProduct(item.getProduct());
             stock.setEntry(Boolean.TRUE);
             stock.setQuantity(item.getQuantity());
-            stock.setObservation(EnumObservationStock.PURCHASE_ORDER.getObservation() + " " + purchaseOrder.getId());
+            stock.setObservation(EnumObservationStock.PURCHASE_ORDER.getObservation() + " #" + purchaseOrder.getId());
 
             stockService.insert(stock);
         });

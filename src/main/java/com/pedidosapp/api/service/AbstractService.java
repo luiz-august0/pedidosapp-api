@@ -104,8 +104,7 @@ public abstract class AbstractService
         return entityObject;
     }
 
-    public ResponseEntity<DTO> insert(DTO object) {
-        Entity entityObject = (Entity) Converter.convertDTOToEntity(object, entity.getClass());
+    public ResponseEntity<DTO> insert(Entity entityObject) {
         validator.validate(entityObject);
 
         repository.save(entityObject);
@@ -129,21 +128,20 @@ public abstract class AbstractService
         return ResponseEntity.ok().body((DTO) Converter.convertEntityToDTO(entityObject, dto.getClass()));
     }
 
-    public ResponseEntity<DTO> update(Integer id, DTO object) {
+    public ResponseEntity<DTO> update(Integer id, Entity entityObject) {
         this.findAndValidate(id);
 
         try {
-            Class<?> objectClass = object.getClass();
+            Class<?> objectClass = entityObject.getClass();
             Field field = objectClass.getDeclaredField("id");
             field.setAccessible(true);
-            field.set(object, id);
+            field.set(entityObject, id);
         } catch (NoSuchFieldException e) {
             throw new ApplicationGenericsException("Classe " + entity.getClass().getName() + " não tem campo ID");
         } catch (IllegalAccessException e) {
             throw new ApplicationGenericsException("Não foi possível acessar o campo id da classe " + entity.getClass().getName());
         }
 
-        Entity entityObject = (Entity) Converter.convertDTOToEntity(object, entity.getClass());
         validator.validate(entityObject);
 
         repository.save(entityObject);

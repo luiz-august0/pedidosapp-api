@@ -41,8 +41,7 @@ public class PurchaseOrderItemService extends AbstractService<PurchaseOrderItemR
 
     @Override
     @Transactional
-    public ResponseEntity<PurchaseOrderItemDTO> insert(PurchaseOrderItemDTO purchaseOrderItemDTO) {
-        PurchaseOrderItem purchaseOrderItem = Converter.convertDTOToEntity(purchaseOrderItemDTO, PurchaseOrderItem.class);
+    public ResponseEntity<PurchaseOrderItemDTO> insert(PurchaseOrderItem purchaseOrderItem) {
         prepareInsertOrUpdate(purchaseOrderItem);
         purchaseOrderItemValidator.validate(purchaseOrderItem);
 
@@ -54,9 +53,8 @@ public class PurchaseOrderItemService extends AbstractService<PurchaseOrderItemR
 
     @Override
     @Transactional
-    public ResponseEntity<PurchaseOrderItemDTO> update(Integer id, PurchaseOrderItemDTO purchaseOrderItemDTO) {
+    public ResponseEntity<PurchaseOrderItemDTO> update(Integer id, PurchaseOrderItem purchaseOrderItem) {
         PurchaseOrderItem purchaseOrderItemOld = super.findAndValidate(id);
-        PurchaseOrderItem purchaseOrderItem = Converter.convertDTOToEntity(purchaseOrderItemDTO, PurchaseOrderItem.class);
         purchaseOrderItem.setId(purchaseOrderItemOld.getId());
         purchaseOrderItem.setProduct(purchaseOrderItemOld.getProduct());
 

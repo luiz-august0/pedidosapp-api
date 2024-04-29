@@ -31,8 +31,7 @@ public class ProductService extends AbstractService<ProductRepository, Product, 
     }
 
     @Override
-    public ResponseEntity<ProductDTO> insert(ProductDTO productDTO) {
-        Product product = Converter.convertDTOToEntity(productDTO, Product.class);
+    public ResponseEntity<ProductDTO> insert(Product product) {
         productValidator.validate(product);
 
         resolverProductSuppliers(product);
@@ -42,9 +41,8 @@ public class ProductService extends AbstractService<ProductRepository, Product, 
     }
 
     @Override
-    public ResponseEntity<ProductDTO> update(Integer id, ProductDTO productDTO) {
+    public ResponseEntity<ProductDTO> update(Integer id, Product product) {
         Product productManaged = this.findAndValidate(id);
-        Product product = Converter.convertDTOToEntity(productDTO, Product.class);
         product.setId(productManaged.getId());
 
         productValidator.validate(product);
