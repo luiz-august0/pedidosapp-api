@@ -7,6 +7,7 @@ import com.pedidosapp.api.model.entities.ProductSupplier;
 import com.pedidosapp.api.repository.ProductRepository;
 import com.pedidosapp.api.service.validators.ProductValidator;
 import com.pedidosapp.api.utils.Utils;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class ProductService extends AbstractService<ProductRepository, Product, 
         this.productValidator = new ProductValidator();
     }
 
+    @Transactional
     @Override
     public ResponseEntity<ProductDTO> insert(Product product) {
         productValidator.validate(product);
@@ -40,6 +42,7 @@ public class ProductService extends AbstractService<ProductRepository, Product, 
         return ResponseEntity.status(HttpStatus.CREATED).body(Converter.convertEntityToDTO(productManaged, ProductDTO.class));
     }
 
+    @Transactional
     @Override
     public ResponseEntity<ProductDTO> update(Integer id, Product product) {
         Product productManaged = this.findAndValidate(id);

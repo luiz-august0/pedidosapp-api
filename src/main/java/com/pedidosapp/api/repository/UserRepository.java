@@ -11,4 +11,6 @@ public interface UserRepository extends
         JpaSpecificationExecutor<User>
 {
     User findByLogin(String login);
+
+    User findByLoginAndIdIsNot(String login, Integer id);
 }

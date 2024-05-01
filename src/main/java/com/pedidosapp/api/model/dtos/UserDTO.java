@@ -1,6 +1,6 @@
 package com.pedidosapp.api.model.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.enums.EnumUserRole;
 import lombok.*;
@@ -15,7 +15,7 @@ public class UserDTO extends AbstractDTO<User> {
 
     private String login;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private EnumUserRole role;

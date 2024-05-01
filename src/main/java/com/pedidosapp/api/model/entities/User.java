@@ -43,10 +43,6 @@ public class User extends AbstractEntity implements UserDetails {
     @JsonIgnore
     private Employee employee;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    List<Order> orders;
-
     @Column(name = "active", nullable = false)
     private Boolean active;
 

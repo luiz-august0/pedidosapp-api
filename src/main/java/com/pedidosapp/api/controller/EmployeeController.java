@@ -17,15 +17,15 @@ public class EmployeeController extends AbstractAllGetController<EmployeeService
         super(service);
     }
 
-    public ResponseEntity insert(EmployeeBean bean) {
+    public ResponseEntity<EmployeeDTO> insert(EmployeeBean bean) {
         return service.insert(bean);
     }
 
-    public ResponseEntity update(Integer id, EmployeeBean bean) {
+    public ResponseEntity<EmployeeDTO> update(Integer id, EmployeeBean bean) {
         return service.update(id, bean);
     }
 
-    public ResponseEntity activateInactivate(Integer id, Boolean active) {
+    public ResponseEntity<EmployeeDTO> activateInactivate(Integer id, Boolean active) {
         return service.activateInactivate(id, active);
     }
 }

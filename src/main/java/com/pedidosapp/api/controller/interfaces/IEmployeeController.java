@@ -12,11 +12,11 @@ public interface IEmployeeController extends IAbstractAllGetController<EmployeeD
     String PATH = prefixPath + "/employee";
 
     @PostMapping
-    ResponseEntity insert(@RequestBody EmployeeBean bean);
+    ResponseEntity<EmployeeDTO> insert(@RequestBody EmployeeBean bean);
 
     @PutMapping("/{id}")
-    ResponseEntity update(@PathVariable("id") Integer id, @RequestBody EmployeeBean bean);
+    ResponseEntity<EmployeeDTO> update(@PathVariable("id") Integer id, @RequestBody EmployeeBean bean);
 
     @PutMapping("/{id}/activate")
-    ResponseEntity activateInactivate(@PathVariable("id") Integer id, @RequestParam(value = "active", defaultValue = "true") Boolean active);
+    ResponseEntity<EmployeeDTO> activateInactivate(@PathVariable("id") Integer id, @RequestParam(value = "active", defaultValue = "true") Boolean active);
 }
