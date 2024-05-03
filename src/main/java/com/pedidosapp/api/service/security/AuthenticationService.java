@@ -7,13 +7,17 @@ import com.pedidosapp.api.model.dtos.EmployeeDTO;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.records.AuthenticationRecord;
 import com.pedidosapp.api.repository.UserRepository;
+import com.pedidosapp.api.service.UserService;
 import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
 import com.pedidosapp.api.service.exceptions.enums.EnumGenericsException;
 import com.pedidosapp.api.service.exceptions.enums.EnumResourceNotFoundException;
 import com.pedidosapp.api.service.exceptions.enums.EnumUnauthorizedException;
 import com.pedidosapp.api.utils.StringUtil;
+import com.pedidosapp.api.utils.TokenUtil;
 import com.pedidosapp.api.utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -29,11 +33,16 @@ import java.util.Optional;
 @Service
 public class AuthenticationService {
 
+    @Autowired
+    private HttpServletRequest request;
+
     private final AuthenticationManager authenticationManager;
 
     private final TokenService tokenService;
 
     private final UserRepository userRepository;
+
+    private final UserService userService;
 
     public ResponseEntity<TokenBean> login(AuthenticationRecord authenticationRecord) {
         if (StringUtil.isNullOrEmpty(TenantContext.getCurrentTenant())
@@ -53,17 +62,7 @@ public class AuthenticationService {
             String accessToken = tokenService.generateToken(user);
             String refreshToken = tokenService.generateRefreshToken(user);
 
-            TokenBean tokenBean = new TokenBean();
-            tokenBean.setUserId(user.getId());
-            tokenBean.setLogin(user.getLogin());
-            tokenBean.setRole(user.getRole());
-
-            if (Utils.isNotEmpty(user.getEmployee())) {
-                tokenBean.setEmployee(Converter.convertEntityToDTO(user.getEmployee(), EmployeeDTO.class));
-            }
-
-            tokenBean.setAccessToken(accessToken);
-            tokenBean.setRefreshToken(refreshToken);
+            TokenBean tokenBean = makeTokenBeanFromUser(user, accessToken, refreshToken);
 
             return ResponseEntity.ok(tokenBean);
         } catch (RuntimeException e) {
@@ -98,11 +97,24 @@ public class AuthenticationService {
             );
         }
 
-        var accessToken = tokenService.generateToken(user);
-        var newRefreshToken = tokenService.generateRefreshToken(user);
+        String accessToken = tokenService.generateToken(user);
+        String newRefreshToken = tokenService.generateRefreshToken(user);
 
+        TokenBean tokenBean = makeTokenBeanFromUser(user, accessToken, newRefreshToken);
+
+        return ResponseEntity.ok(tokenBean);
+    }
+
+    public ResponseEntity<TokenBean> getSession() {
+        User user = userService.findAndValidateActive(userService.getUserByContext().getId());
+
+        TokenBean tokenBean = makeTokenBeanFromUser(user, TokenUtil.getTokenFromRequest(request), tokenService.generateRefreshToken(user));
+
+        return ResponseEntity.ok(tokenBean);
+    }
+
+    private TokenBean makeTokenBeanFromUser(User user, String accessToken, String refreshToken) {
         TokenBean tokenBean = new TokenBean();
-
         tokenBean.setUserId(user.getId());
         tokenBean.setLogin(user.getLogin());
         tokenBean.setRole(user.getRole());
@@ -112,8 +124,8 @@ public class AuthenticationService {
         }
 
         tokenBean.setAccessToken(accessToken);
-        tokenBean.setRefreshToken(newRefreshToken);
+        tokenBean.setRefreshToken(refreshToken);
 
-        return ResponseEntity.ok(tokenBean);
+        return tokenBean;
     }
 }
