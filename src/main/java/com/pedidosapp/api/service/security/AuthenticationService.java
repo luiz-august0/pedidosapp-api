@@ -50,6 +50,10 @@ public class AuthenticationService {
             throw new ApplicationGenericsException(EnumGenericsException.LOGIN_WITHOUT_TENANT);
         }
 
+        if (StringUtil.isNullOrEmpty(userRepository.findSchemaByName(TenantContext.getCurrentTenant()))) {
+            throw new ApplicationGenericsException(EnumGenericsException.INVALID_TENANT);
+        }
+
         var loginPassword = new UsernamePasswordAuthenticationToken(authenticationRecord.login(), authenticationRecord.password());
         EnumUnauthorizedException userInactiveEnum = EnumUnauthorizedException.USER_INACTIVE;
 
