@@ -7,6 +7,6 @@ public abstract class TokenUtil {
         String sessionHeader = request.getHeader("Authorization");
         if (Utils.isEmpty(sessionHeader)) return null;
 
-        return sessionHeader.replace("Bearer ", "");
+        return sessionHeader.replace("Bearer", "").trim();
     }
 }
