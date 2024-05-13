@@ -74,7 +74,7 @@ public class TokenService {
                     .getSubject();
         } catch (Exception e) {
             if (e.getClass().equals(TokenExpiredException.class)) {
-                throw new ApplicationGenericsException(EnumGenericsException.EXPIRED_TOKEN);
+                throw new ApplicationGenericsException(EnumGenericsException.EXPIRED_SESSION);
             } else if (e.getClass().equals(JWTVerificationException.class)) {
                 throw new ApplicationGenericsException(EnumGenericsException.VALIDATE_TOKEN);
             } else {

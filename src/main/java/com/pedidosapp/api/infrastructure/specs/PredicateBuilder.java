@@ -11,6 +11,8 @@ public class PredicateBuilder {
     public static Predicate createPredicate(CriteriaBuilder criteriaBuilder, Path path, Object fieldValue, EnumSpecification specification) {
         if (path.getJavaType().equals(Date.class)) {
             fieldValue = DateUtil.parseStringToDate(fieldValue.toString());
+        } else if (path.getJavaType().equals(Boolean.class)) {
+            fieldValue = fieldValue.toString().equals("true");
         }
 
         switch (specification) {

@@ -53,7 +53,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             Integer status = HttpServletResponse.SC_UNAUTHORIZED;
 
             if (e.getClass().equals(TokenExpiredException.class)) {
-                errorMessage = EnumGenericsException.EXPIRED_TOKEN.getMessage();
+                errorMessage = EnumGenericsException.EXPIRED_SESSION.getMessage();
             } else if (e.getClass().equals(JWTVerificationException.class)) {
                 errorMessage = EnumGenericsException.VALIDATE_TOKEN.getMessage();
             } else if (e.getClass().equals(ApplicationGenericsException.class)) {
@@ -64,6 +64,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             }
 
             response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
             response.setStatus(status);
             response.getWriter().write("{\"message\":\"" + errorMessage + "\"}");
         }
