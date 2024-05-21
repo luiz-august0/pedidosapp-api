@@ -8,7 +8,9 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface SupplierRepository extends
         JpaRepository<Supplier, Integer>,
         PagingAndSortingRepository<Supplier, Integer>,
-        JpaSpecificationExecutor<Supplier>
-{
+        JpaSpecificationExecutor<Supplier> {
 
+    Boolean existsByCpfAndIdIsNot(String cpf, Integer id);
+
+    Boolean existsByCnpjAndIdIsNot(String cnpj, Integer id);
 }

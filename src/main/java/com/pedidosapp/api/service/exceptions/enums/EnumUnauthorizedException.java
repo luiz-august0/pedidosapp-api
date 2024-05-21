@@ -7,8 +7,8 @@ public enum EnumUnauthorizedException {
     CNPJ_INVALID("CNPJ inválido"),
     CNPJ_CPF_INVALID("CPF/CNPJ inválido"),
     CPF_INVALID("CPF inválido"),
-    CPF_ALREADY_REGISTERED("CPF j́á cadastrado"),
-    CNPJ_ALREADY_REGISTERED("CNPJ j́á cadastrado"),
+    CPF_ALREADY_REGISTERED("CPF já cadastrado"),
+    CNPJ_ALREADY_REGISTERED("CNPJ já cadastrado"),
     EMPTY_ITEMS_ORDER("Não há itens no pedido"),
     ORDER_ALREADY_CLOSED("Pedido já foi fechado"),
     ADMIN_CANNOT_BE_DEACTIVATED("Usuário admin não pode ser desativado");

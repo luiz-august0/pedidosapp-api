@@ -9,6 +9,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class SupplierService extends AbstractService<SupplierRepository, Supplier, SupplierDTO, SupplierValidator> {
     SupplierService(SupplierRepository repository) {
-        super(repository, new Supplier(), new SupplierDTO(), new SupplierValidator());
+        super(repository, new Supplier(), new SupplierDTO(), new SupplierValidator(repository));
     }
 }

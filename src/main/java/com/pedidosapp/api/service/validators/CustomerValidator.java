@@ -8,6 +8,7 @@ import com.pedidosapp.api.service.validators.classes.CharacterLengthField;
 import com.pedidosapp.api.service.validators.classes.RequiredField;
 import com.pedidosapp.api.utils.CnpjUtil;
 import com.pedidosapp.api.utils.CpfUtil;
+import com.pedidosapp.api.utils.StringUtil;
 import com.pedidosapp.api.utils.Utils;
 
 import java.util.ArrayList;
@@ -41,30 +42,18 @@ public class CustomerValidator extends AbstractValidator {
 
         super.validate(object);
 
-        if (Utils.isNotEmpty(cpf)) {
-            List<Customer> customerList = null;
+        if (StringUtil.isNotNullOrEmpty(cpf)) {
             CpfUtil.validate(cpf);
 
-            if (Utils.isNotEmpty(customer.getId())) {
-                customerList = customerRepository.findAllByCpfAndIdIsNot(cpf, customer.getId());
-            } else {
-                customerList = customerRepository.findAllByCpf(cpf);
-            }
-
-            if (Utils.isNotEmpty(customerList)) throw new ApplicationGenericsException(EnumUnauthorizedException.CPF_ALREADY_REGISTERED);
+            if (customerRepository.existsByCpfAndIdIsNot(cpf, Utils.nvl(customer.getId(), 0)))
+                throw new ApplicationGenericsException(EnumUnauthorizedException.CPF_ALREADY_REGISTERED);
         }
 
         if (Utils.isNotEmpty(cnpj)) {
-            List<Customer> customerList = null;
             CnpjUtil.validate(cnpj);
 
-            if (Utils.isNotEmpty(customer.getId())) {
-                customerList = customerRepository.findAllByCnpjAndIdIsNot(cnpj, customer.getId());
-            } else {
-                customerList = customerRepository.findAllByCnpj(cnpj);
-            }
-
-            if (Utils.isNotEmpty(customerList)) throw new ApplicationGenericsException(EnumUnauthorizedException.CNPJ_ALREADY_REGISTERED);
+            if (customerRepository.existsByCnpjAndIdIsNot(cnpj, Utils.nvl(customer.getId(), 0)))
+                throw new ApplicationGenericsException(EnumUnauthorizedException.CNPJ_ALREADY_REGISTERED);
         }
     }
 }

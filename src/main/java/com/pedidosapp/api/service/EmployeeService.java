@@ -30,10 +30,10 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
     private final UserValidator userValidator;
 
     EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository) {
-        super(employeeRepository, new Employee(), new EmployeeDTO(), new EmployeeValidator());
+        super(employeeRepository, new Employee(), new EmployeeDTO(), new EmployeeValidator(employeeRepository));
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
-        this.employeeValidator = new EmployeeValidator();
+        this.employeeValidator = new EmployeeValidator(employeeRepository);
         this.userValidator = new UserValidator(userRepository);
     }
 
