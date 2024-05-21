@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.pedidosapp.api.config.multitenancy.TenantInterceptor;
+import com.pedidosapp.api.infrastructure.deserializers.EmptyStringAsNullModule;
 import com.pedidosapp.api.utils.enums.EnumDateFormat;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -29,6 +30,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.setDateFormat(EnumDateFormat.YYYYMMDDTHHMMSS.getFormat());
+        mapper.registerModule(new EmptyStringAsNullModule());
+
         final MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter(mapper);
 
         converters.clear();

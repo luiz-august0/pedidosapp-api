@@ -50,7 +50,7 @@ public class SupplierValidator extends AbstractValidator {
                 throw new ApplicationGenericsException(EnumUnauthorizedException.CPF_ALREADY_REGISTERED);
         }
 
-        if (Utils.isNotEmpty(cnpj)) {
+        if (StringUtil.isNotNullOrEmpty(cnpj)) {
             CnpjUtil.validate(cnpj);
 
             if (supplierRepository.existsByCnpjAndIdIsNot(cnpj, Utils.nvl(supplier.getId(), 0)))

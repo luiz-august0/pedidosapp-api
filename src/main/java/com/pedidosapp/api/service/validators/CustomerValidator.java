@@ -49,7 +49,7 @@ public class CustomerValidator extends AbstractValidator {
                 throw new ApplicationGenericsException(EnumUnauthorizedException.CPF_ALREADY_REGISTERED);
         }
 
-        if (Utils.isNotEmpty(cnpj)) {
+        if (StringUtil.isNotNullOrEmpty(cnpj)) {
             CnpjUtil.validate(cnpj);
 
             if (customerRepository.existsByCnpjAndIdIsNot(cnpj, Utils.nvl(customer.getId(), 0)))
