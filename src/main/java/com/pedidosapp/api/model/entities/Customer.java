@@ -53,4 +53,9 @@ public class Customer extends AbstractEntity {
     public String getPortugueseClassName() {
         return "cliente";
     }
+
+    @Override
+    public String getObjectName() {
+        return this.name;
+    }
 }

@@ -84,7 +84,7 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
     }
 
     private void prepareInsertOrUpdate(OrderItem orderItem) {
-        Product product = productService.findAndValidateActive(orderItem.getProduct().getId());
+        Product product = productService.findAndValidateActive(orderItem.getProduct().getId(), true);
 
         orderItem.setProduct(product);
         orderItem.setUnitaryValue(product.getUnitaryValue());

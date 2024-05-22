@@ -75,8 +75,8 @@ public class PurchaseOrderService extends AbstractService<PurchaseOrderRepositor
         purchaseOrder.setAmount(BigDecimal.ZERO);
         purchaseOrder.setDiscount(BigDecimal.ZERO);
         purchaseOrder.setAddition(BigDecimal.ZERO);
-        purchaseOrder.setCustomer(Utils.isNotEmpty(purchaseOrder.getCustomer())?customerService.findAndValidateActive(purchaseOrder.getCustomer().getId()):null);
-        purchaseOrder.setUser(userService.findAndValidateActive(getUserByContext().getId()));
+        purchaseOrder.setCustomer(Utils.isNotEmpty(purchaseOrder.getCustomer()) ? customerService.findAndValidateActive(purchaseOrder.getCustomer().getId(), true) : null);
+        purchaseOrder.setUser(userService.findAndValidateActive(getUserByContext().getId(), true));
         purchaseOrder.setStatus(EnumStatusOrder.OPEN);
 
         purchaseOrderValidator.validate(purchaseOrder);

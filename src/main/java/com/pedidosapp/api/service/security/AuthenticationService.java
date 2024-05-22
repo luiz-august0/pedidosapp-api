@@ -110,7 +110,9 @@ public class AuthenticationService {
     }
 
     public ResponseEntity<TokenBean> getSession() {
-        User user = userService.findAndValidateActive(userService.getUserByContext().getId());
+        User user = userService.findAndValidate(userService.getUserByContext().getId());
+
+        if (!user.getActive()) throw new ApplicationGenericsException(EnumUnauthorizedException.USER_INACTIVE);
 
         TokenBean tokenBean = makeTokenBeanFromUser(user, TokenUtil.getTokenFromRequest(request), tokenService.generateRefreshToken(user));
 

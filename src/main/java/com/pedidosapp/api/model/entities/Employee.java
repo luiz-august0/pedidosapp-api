@@ -48,4 +48,9 @@ public class Employee extends AbstractEntity {
     public String getPortugueseClassName() {
         return "funcionário";
     }
+
+    @Override
+    public String getObjectName() {
+        return this.name;
+    }
 }

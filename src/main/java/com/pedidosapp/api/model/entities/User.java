@@ -97,4 +97,9 @@ public class User extends AbstractEntity implements UserDetails {
     public String getPortugueseClassName() {
         return "usuário";
     }
+
+    @Override
+    public String getObjectName() {
+        return this.login;
+    }
 }

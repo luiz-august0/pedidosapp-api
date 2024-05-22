@@ -4,4 +4,9 @@ import java.io.Serializable;
 
 public abstract class AbstractEntity implements Serializable {
     public abstract String getPortugueseClassName();
+
+    public String getObjectName() {
+        return "";
+    }
+
 }

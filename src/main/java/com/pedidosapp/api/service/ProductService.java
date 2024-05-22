@@ -64,7 +64,7 @@ public class ProductService extends AbstractService<ProductRepository, Product, 
                 productSuppliersManaged.removeIf(productSupplierManaged -> productSupplierManaged.getSupplier().getId().equals(productSupplier.getSupplier().getId()));
 
                 productSupplier.setProduct(product);
-                productSupplier.setSupplier(supplierService.findAndValidateActive(productSupplier.getSupplier().getId()));
+                productSupplier.setSupplier(supplierService.findAndValidateActive(productSupplier.getSupplier().getId(), true));
                 productSuppliersManaged.add(productSupplier);
             });
         }

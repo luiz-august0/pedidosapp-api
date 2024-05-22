@@ -84,7 +84,7 @@ public class PurchaseOrderItemService extends AbstractService<PurchaseOrderItemR
     }
 
     private void prepareInsertOrUpdate(PurchaseOrderItem purchaseOrderItem) {
-        Product product = productService.findAndValidateActive(purchaseOrderItem.getProduct().getId());
+        Product product = productService.findAndValidateActive(purchaseOrderItem.getProduct().getId(), true);
 
         purchaseOrderItem.setProduct(product);
         purchaseOrderItem.setUnitaryValue(product.getUnitaryValue());

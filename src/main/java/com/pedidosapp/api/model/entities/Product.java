@@ -49,4 +49,9 @@ public class Product extends AbstractEntity {
     public String getPortugueseClassName() {
         return "produto";
     }
+
+    @Override
+    public String getObjectName() {
+        return this.description;
+    }
 }

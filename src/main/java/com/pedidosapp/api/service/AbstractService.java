@@ -84,7 +84,7 @@ public abstract class AbstractService
         return object.get();
     }
 
-    public Entity findAndValidateActive(Integer id) {
+    public Entity findAndValidateActive(Integer id, Boolean returnObjectName) {
         Entity entityObject = this.findAndValidate(id);
 
         try {
@@ -93,7 +93,15 @@ public abstract class AbstractService
             Boolean active = (Boolean) field.get(entityObject);
 
             if (active.equals(false)) {
-                throw new ApplicationGenericsException(EnumResourceInactiveException.RESOURCE_INACTIVE, entity.getPortugueseClassName(), id);
+                if (returnObjectName) {
+                    throw new ApplicationGenericsException(
+                            EnumResourceInactiveException.RESOURCE_INACTIVE,
+                            entity.getPortugueseClassName(),
+                            entityObject.getObjectName()
+                    );
+                } else {
+                    throw new ApplicationGenericsException(EnumResourceInactiveException.RESOURCE_INACTIVE, entity.getPortugueseClassName(), id);
+                }
             }
         } catch (NoSuchFieldException e) {
             throw new ApplicationGenericsException("Classe " + entity.getClass().getName() + " não tem campo active");

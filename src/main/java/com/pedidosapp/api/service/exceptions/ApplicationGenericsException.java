@@ -4,6 +4,7 @@ import com.pedidosapp.api.service.exceptions.enums.EnumGenericsException;
 import com.pedidosapp.api.service.exceptions.enums.EnumResourceInactiveException;
 import com.pedidosapp.api.service.exceptions.enums.EnumResourceNotFoundException;
 import com.pedidosapp.api.service.exceptions.enums.EnumUnauthorizedException;
+import com.pedidosapp.api.utils.StringUtil;
 import org.springframework.http.HttpStatus;
 
 public class ApplicationGenericsException extends RuntimeException {
@@ -35,7 +36,12 @@ public class ApplicationGenericsException extends RuntimeException {
     }
 
     public ApplicationGenericsException(EnumResourceInactiveException exception, String portugueseClassName, Integer id) {
-        super(portugueseClassName + " com id " + id + " " + exception.getMessage());
+        super(StringUtil.capitalizeAndShorthand(portugueseClassName) + " com id " + id + " " + exception.getMessage());
+        this.status = HttpStatus.UNAUTHORIZED;
+    }
+
+    public ApplicationGenericsException(EnumResourceInactiveException exception, String portugueseClassName, String objectName) {
+        super(StringUtil.capitalizeAndShorthand(portugueseClassName) + " " + objectName + " " + exception.getMessage());
         this.status = HttpStatus.UNAUTHORIZED;
     }
 

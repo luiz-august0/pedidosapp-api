@@ -74,8 +74,8 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
         order.setAmount(BigDecimal.ZERO);
         order.setDiscount(BigDecimal.ZERO);
         order.setAddition(BigDecimal.ZERO);
-        order.setCustomer(customerService.findAndValidateActive(order.getCustomer().getId()));
-        order.setUser(userService.findAndValidateActive(getUserByContext().getId()));
+        order.setCustomer(customerService.findAndValidateActive(order.getCustomer().getId(), true));
+        order.setUser(userService.findAndValidateActive(getUserByContext().getId(), true));
         order.setStatus(EnumStatusOrder.OPEN);
 
         orderValidator.validate(order);

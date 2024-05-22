@@ -49,4 +49,9 @@ public class Supplier extends AbstractEntity {
     public String getPortugueseClassName() {
         return "fornecedor";
     }
+
+    @Override
+    public String getObjectName() {
+        return this.name;
+    }
 }
