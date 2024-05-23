@@ -1,7 +1,10 @@
 package com.pedidosapp.api.model.dtos;
 
+import com.pedidosapp.api.infrastructure.annotations.ObjectFieldsOnly;
 import com.pedidosapp.api.model.entities.Supplier;
 import lombok.*;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,4 +27,7 @@ public class SupplierDTO extends AbstractDTO<Supplier> {
     private String contact;
 
     private Boolean active;
+
+    @ObjectFieldsOnly(ignored = {"suppliers"})
+    private List<ProductDTO> products;
 }

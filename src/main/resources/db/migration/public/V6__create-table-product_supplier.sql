@@ -1,10 +1,3 @@
-CREATE TABLE IF NOT EXISTS public.product_supplier (
-    id INT4 NOT NULL,
-    product_id INT NOT NULL,
-    supplier_id INT NOT NULL,
-    schema varchar(100)
-);
-
 CREATE SEQUENCE IF NOT EXISTS public.gen_id_product_supplier
     INCREMENT BY 1
     MINVALUE 1
@@ -12,6 +5,13 @@ CREATE SEQUENCE IF NOT EXISTS public.gen_id_product_supplier
     START 1
     CACHE 1
     NO CYCLE;
+
+CREATE TABLE IF NOT EXISTS public.product_supplier (
+    id INT4 NOT NULL DEFAULT nextval('gen_id_product_supplier'),
+    product_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    schema varchar(100)
+);
 
 ALTER TABLE public.product_supplier ADD CONSTRAINT pk_product_supplier PRIMARY KEY (id);
 

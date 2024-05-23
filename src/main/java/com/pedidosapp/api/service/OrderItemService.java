@@ -94,7 +94,7 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
     }
 
     private void calculateAndUpdateOrder(OrderItem orderItem) {
-        Order order = (Order) this.findAndValidateGeneric(orderRepository, new Order().getPortugueseClassName(), orderItem.getOrder().getId());
+        Order order = this.findAndValidateGeneric(Order.class, orderItem.getOrder().getId());
 
         order.setAmount(order.calculateAmount());
         order.setDiscount(order.calculateDiscount());

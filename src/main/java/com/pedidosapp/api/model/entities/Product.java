@@ -1,6 +1,8 @@
 package com.pedidosapp.api.model.entities;
 
 import com.pedidosapp.api.model.enums.EnumUnitProduct;
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.ProductService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,8 +38,13 @@ public class Product extends AbstractEntity {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductSupplier> productSuppliers;
+    @JoinTable(
+            name = "product_supplier",
+            joinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "supplier_id", referencedColumnName = "id")}
+    )
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Supplier> suppliers;
 
     @PrePersist
     @PreUpdate
@@ -48,6 +55,11 @@ public class Product extends AbstractEntity {
     @Override
     public String getPortugueseClassName() {
         return "produto";
+    }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return ProductService.class;
     }
 
     @Override

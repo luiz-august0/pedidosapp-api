@@ -1,6 +1,8 @@
 package com.pedidosapp.api.model.entities;
 
 import com.pedidosapp.api.model.enums.EnumStatusOrder;
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.PurchaseOrderService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.*;
@@ -96,5 +98,10 @@ public class PurchaseOrder extends AbstractEntity {
     @Override
     public String getPortugueseClassName() {
         return "pedido de compra";
+    }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return PurchaseOrderService.class;
     }
 }

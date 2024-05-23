@@ -1,6 +1,8 @@
 package com.pedidosapp.api.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.CustomerService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.*;
@@ -52,6 +54,11 @@ public class Customer extends AbstractEntity {
     @Override
     public String getPortugueseClassName() {
         return "cliente";
+    }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return CustomerService.class;
     }
 
     @Override

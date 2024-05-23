@@ -1,8 +1,12 @@
 package com.pedidosapp.api.model.entities;
 
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.SupplierService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -39,6 +43,14 @@ public class Supplier extends AbstractEntity {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
+    @JoinTable(
+            name = "product_supplier",
+            joinColumns = {@JoinColumn(name = "supplier_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")}
+    )
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Product> products;
+
     @PrePersist
     @PreUpdate
     protected void onPersist() {
@@ -48,6 +60,11 @@ public class Supplier extends AbstractEntity {
     @Override
     public String getPortugueseClassName() {
         return "fornecedor";
+    }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return SupplierService.class;
     }
 
     @Override

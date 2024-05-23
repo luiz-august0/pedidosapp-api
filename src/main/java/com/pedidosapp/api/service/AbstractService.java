@@ -9,6 +9,8 @@ import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
 import com.pedidosapp.api.service.exceptions.enums.EnumResourceInactiveException;
 import com.pedidosapp.api.service.exceptions.enums.EnumResourceNotFoundException;
 import com.pedidosapp.api.service.validators.AbstractValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,11 +37,24 @@ public abstract class AbstractService
 
     private final Validator validator;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     AbstractService(Repository repository, Entity entity, DTO dto, Validator validator) {
         this.repository = repository;
         this.entity = entity;
         this.dto = dto;
         this.validator = validator;
+    }
+
+    public <Service extends AbstractService> Service getServiceBean(Class<? extends AbstractEntity> entityClass) {
+        try {
+            Class<? extends AbstractService> serviceClass = entityClass.getDeclaredConstructor().newInstance().getServiceClass();
+
+            return (Service) applicationContext.getBean(serviceClass);
+        } catch (Exception e) {
+            throw new ApplicationGenericsException(e.getMessage());
+        }
     }
 
     public List<DTO> findAll() {
@@ -62,26 +77,6 @@ public abstract class AbstractService
         }
 
         return (Entity) object.get();
-    }
-
-    public DTO findDTOAndValidate(Integer id) {
-        Optional object = repository.findById(id);
-
-        if (object.isEmpty()) {
-            throw new ApplicationGenericsException(EnumResourceNotFoundException.RESOURCE_NOT_FOUND, entity.getPortugueseClassName(), id);
-        }
-
-        return (DTO) Converter.convertEntityToDTO((Entity) object.get(), dto.getClass());
-    }
-
-    public Object findAndValidateGeneric(JpaRepository genericRepository, String portugueseClassName, Integer id) {
-        Optional object = genericRepository.findById(id);
-
-        if (object.isEmpty()) {
-            throw new ApplicationGenericsException(EnumResourceNotFoundException.RESOURCE_NOT_FOUND, portugueseClassName, id);
-        }
-
-        return object.get();
     }
 
     public Entity findAndValidateActive(Integer id, Boolean returnObjectName) {
@@ -110,6 +105,20 @@ public abstract class AbstractService
         }
 
         return entityObject;
+    }
+
+    public DTO findDTOAndValidate(Integer id) {
+        Entity entityObject = this.findAndValidate(id);
+
+        return (DTO) Converter.convertEntityToDTO(entityObject, dto.getClass());
+    }
+
+    public <GenericEntity extends AbstractEntity> GenericEntity findAndValidateGeneric(Class<? extends AbstractEntity> entityClass, Integer id) {
+        return (GenericEntity) getServiceBean(entityClass).findAndValidate(id);
+    }
+
+    public <GenericEntity extends AbstractEntity> GenericEntity findAndValidateActiveGeneric(Class<? extends AbstractEntity> entityClass, Integer id, Boolean returnObjectName) {
+        return (GenericEntity) getServiceBean(entityClass).findAndValidateActive(id, returnObjectName);
     }
 
     public ResponseEntity<DTO> insert(Entity entityObject) {

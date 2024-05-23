@@ -2,6 +2,8 @@ package com.pedidosapp.api.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pedidosapp.api.model.enums.EnumUserRole;
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.UserService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -96,6 +98,11 @@ public class User extends AbstractEntity implements UserDetails {
     @Override
     public String getPortugueseClassName() {
         return "usuário";
+    }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return UserService.class;
     }
 
     @Override

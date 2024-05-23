@@ -94,7 +94,7 @@ public class PurchaseOrderItemService extends AbstractService<PurchaseOrderItemR
     }
 
     private void calculateAndUpdatePurchaseOrder(PurchaseOrderItem purchaseOrderItem) {
-        PurchaseOrder purchaseOrder = (PurchaseOrder) this.findAndValidateGeneric(purchaseOrderRepository, new PurchaseOrder().getPortugueseClassName(), purchaseOrderItem.getPurchaseOrder().getId());
+        PurchaseOrder purchaseOrder = this.findAndValidateGeneric(PurchaseOrder.class, purchaseOrderItem.getPurchaseOrder().getId());
 
         purchaseOrder.setAmount(purchaseOrder.calculateAmount());
         purchaseOrder.setDiscount(purchaseOrder.calculateDiscount());

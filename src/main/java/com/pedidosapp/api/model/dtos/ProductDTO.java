@@ -1,5 +1,6 @@
 package com.pedidosapp.api.model.dtos;
 
+import com.pedidosapp.api.infrastructure.annotations.ObjectFieldsOnly;
 import com.pedidosapp.api.model.entities.Product;
 import com.pedidosapp.api.model.enums.EnumUnitProduct;
 import lombok.*;
@@ -21,7 +22,8 @@ public class ProductDTO extends AbstractDTO<Product> {
 
     private BigDecimal unitaryValue;
 
-    private List<ProductSupplierDTO> productSuppliers;
+    @ObjectFieldsOnly(ignored = {"products"})
+    private List<SupplierDTO> suppliers;
 
     private Boolean active;
 }

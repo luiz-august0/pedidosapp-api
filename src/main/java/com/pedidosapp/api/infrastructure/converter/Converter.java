@@ -106,16 +106,19 @@ public class Converter {
     private static <Entity extends AbstractEntity, DTO extends AbstractDTO> DTO getDTOValueFromDTOField(Entity entity, Class<DTO> dtoClass, Field dtoField) {
         try {
             String[] DTOFields;
+            String[] DTOFieldsToIgnore;
 
             if (dtoField.isAnnotationPresent(ObjectFieldsOnly.class)) {
                 DTOFields = dtoField.getAnnotation(ObjectFieldsOnly.class).value();
+                DTOFieldsToIgnore = dtoField.getAnnotation(ObjectFieldsOnly.class).ignored();
             } else {
                 DTOFields = new String[0];
+                DTOFieldsToIgnore = new String[0];
             }
 
             DTO dtoFieldObj = dtoClass.getDeclaredConstructor().newInstance();
             List<Field> dtoFields = Arrays.stream(dtoClass.getDeclaredFields()).toList().stream().filter(field ->
-                    doFilterAnnotations(field) && (doDTOFieldsFilter(DTOFields, field))
+                    doFilterAnnotations(field) && (doDTOFieldsFilter(DTOFields, field)) && (doDTOFieldsToIgnoreFilter(DTOFieldsToIgnore, field))
             ).toList();
 
             return mapperEntityFieldsToDTOFields(entity, dtoFieldObj, dtoFields);
@@ -132,5 +135,9 @@ public class Converter {
 
     private static boolean doDTOFieldsFilter(String[] DTOFields, Field dtoField) {
         return DTOFields.length == 0 || Arrays.stream(DTOFields).anyMatch(DTOField -> DTOField.equals(dtoField.getName()));
+    }
+
+    private static boolean doDTOFieldsToIgnoreFilter(String[] DTOFieldsToIgnore, Field dtoField) {
+        return DTOFieldsToIgnore.length == 0 || Arrays.stream(DTOFieldsToIgnore).noneMatch(DTOField -> DTOField.equals(dtoField.getName()));
     }
 }

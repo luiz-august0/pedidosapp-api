@@ -1,5 +1,7 @@
 package com.pedidosapp.api.model.entities;
 
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.OrderItemService;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,5 +48,10 @@ public class OrderItem extends AbstractEntity {
     @Override
     public String getPortugueseClassName() {
         return "item do pedido";
+    }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return OrderItemService.class;
     }
 }

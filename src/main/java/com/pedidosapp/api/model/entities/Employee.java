@@ -1,5 +1,7 @@
 package com.pedidosapp.api.model.entities;
 
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.EmployeeService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,6 +49,11 @@ public class Employee extends AbstractEntity {
     @Override
     public String getPortugueseClassName() {
         return "funcionário";
+    }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return EmployeeService.class;
     }
 
     @Override

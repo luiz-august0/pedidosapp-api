@@ -1,5 +1,7 @@
 package com.pedidosapp.api.model.entities;
 
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.StockService;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,5 +46,10 @@ public class Stock extends AbstractEntity {
     @Override
     public String getPortugueseClassName() {
         return "estoque";
+    }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return StockService.class;
     }
 }
