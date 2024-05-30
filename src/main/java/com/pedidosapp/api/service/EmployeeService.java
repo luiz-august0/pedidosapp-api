@@ -45,11 +45,13 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
         String encryptedPassword = new BCryptPasswordEncoder().encode(bean.getPassword());
         User user = new User(bean.getLogin(), encryptedPassword, EnumUserRole.EMPLOYEE);
 
+        user.setActive(bean.getActive());
+
         userValidator.validate(user);
 
         userRepository.save(user);
 
-        Employee employee = new Employee(null, bean.getName(), bean.getEmail(), bean.getCpf(), bean.getContact(), user, true);
+        Employee employee = new Employee(null, bean.getName(), bean.getEmail(), bean.getCpf(), bean.getContact(), user, bean.getActive());
 
         employeeValidator.validate(employee);
 
@@ -74,14 +76,18 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
             user.setPassword(new BCryptPasswordEncoder().encode(bean.getPassword()));
         }
 
+        user.setActive(bean.getActive());
+
         userValidator.validate(user);
 
         userRepository.save(user);
 
         employee.setName(bean.getName());
+        employee.setEmail(bean.getEmail());
         employee.setCpf(bean.getCpf());
         employee.setContact(bean.getContact());
         employee.setUser(user);
+        employee.setActive(bean.getActive());
 
         employeeValidator.validate(employee);
 

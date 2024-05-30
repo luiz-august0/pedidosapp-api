@@ -15,4 +15,6 @@ public class EmployeeBean {
     private String cpf;
 
     private String contact;
+
+    private Boolean active;
 }
