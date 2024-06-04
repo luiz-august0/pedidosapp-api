@@ -60,10 +60,9 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Transactional
     public ResponseEntity<EmployeeDTO> update(Integer id, EmployeeBean bean) {
         Employee employee = super.findAndValidate(id);
-        User user = (userRepository.findById(employee.getUser().getId())).get();
+        User user = employee.getUser();
 
         if ((bean.getLogin() != null) && (!bean.getLogin().equals(user.getLogin()))) {
             if (userRepository.findByLogin(bean.getLogin()) != null)
@@ -78,10 +77,6 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
         user.setActive(bean.getActive());
 
-        userValidator.validate(user);
-
-        userRepository.save(user);
-
         employee.setName(bean.getName());
         employee.setEmail(bean.getEmail());
         employee.setCpf(bean.getCpf());
@@ -91,7 +86,11 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
         employeeValidator.validate(employee);
 
+        userValidator.validate(user);
+
         employeeRepository.save(employee);
+
+        userRepository.save(user);
 
         return ResponseEntity.ok().body(Converter.convertEntityToDTO(employee, EmployeeDTO.class));
     }

@@ -24,11 +24,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+    open-in-view: false
 
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
+
 
 server:
   port: 8080
@@ -87,6 +89,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
 
   datasource:
     url: jdbc:postgresql://${PEDIDOSAPP_PG_URL}/${PEDIDOSAPP_PG_DATABASE}

@@ -43,7 +43,7 @@ public class Product extends AbstractEntity {
             joinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "supplier_id", referencedColumnName = "id")}
     )
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Supplier> suppliers;
 
     @PrePersist
