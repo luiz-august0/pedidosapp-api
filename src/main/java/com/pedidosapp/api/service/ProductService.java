@@ -63,6 +63,9 @@ public class ProductService extends AbstractService<ProductRepository, Product, 
                 suppliersManaged.removeIf(supplierManaged -> supplierManaged.getId().equals(supplierId));
 
                 supplier = this.findAndValidateActiveGeneric(Supplier.class, supplierId, true);
+
+                supplier.setProducts(null);
+
                 suppliersManaged.add(supplier);
             });
         }

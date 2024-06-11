@@ -63,6 +63,9 @@ public class SupplierService extends AbstractService<SupplierRepository, Supplie
                 productsManaged.removeIf(productManaged -> productManaged.getId().equals(productId));
 
                 product = this.findAndValidateActiveGeneric(Product.class, productId, true);
+
+                product.setSuppliers(null);
+
                 productsManaged.add(product);
             });
         }
