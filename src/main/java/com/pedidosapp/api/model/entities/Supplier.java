@@ -4,18 +4,17 @@ import com.pedidosapp.api.service.AbstractService;
 import com.pedidosapp.api.service.SupplierService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "supplier")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Supplier extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_supplier", sequenceName = "gen_id_supplier", allocationSize = 1, schema = "public")
@@ -71,4 +70,5 @@ public class Supplier extends AbstractEntity {
     public String getObjectName() {
         return this.name;
     }
+
 }

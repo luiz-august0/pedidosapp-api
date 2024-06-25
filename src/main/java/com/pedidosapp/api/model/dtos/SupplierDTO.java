@@ -2,16 +2,15 @@ package com.pedidosapp.api.model.dtos;
 
 import com.pedidosapp.api.infrastructure.annotations.ObjectFieldsOnly;
 import com.pedidosapp.api.model.entities.Supplier;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class SupplierDTO extends AbstractDTO<Supplier> {
+
     private Integer id;
 
     private String name;
@@ -30,4 +29,5 @@ public class SupplierDTO extends AbstractDTO<Supplier> {
 
     @ObjectFieldsOnly(ignored = {"suppliers"})
     private List<ProductDTO> products;
+
 }

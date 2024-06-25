@@ -1,8 +1,8 @@
 package com.pedidosapp.api.config.multitenancy;
 
 import com.auth0.jwt.JWT;
-import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
-import com.pedidosapp.api.service.exceptions.enums.EnumGenericsException;
+import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.infrastructure.exceptions.enums.EnumGenericsException;
 import com.pedidosapp.api.utils.Utils;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;

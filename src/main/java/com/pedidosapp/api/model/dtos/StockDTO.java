@@ -3,15 +3,12 @@ package com.pedidosapp.api.model.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pedidosapp.api.infrastructure.annotations.ObjectFieldsOnly;
 import com.pedidosapp.api.model.entities.Stock;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class StockDTO extends AbstractDTO<Stock> {
 

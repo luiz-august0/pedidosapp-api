@@ -6,15 +6,15 @@ import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Table(name = "employee")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Employee extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_employee", sequenceName = "gen_id_employee", allocationSize = 1, schema = "public")
@@ -60,4 +60,5 @@ public class Employee extends AbstractEntity {
     public String getObjectName() {
         return this.name;
     }
+
 }

@@ -24,6 +24,7 @@ import java.util.List;
 @Table(name = "users")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class User extends AbstractEntity implements UserDetails {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_user", sequenceName = "gen_id_user", allocationSize = 1, schema = "public")
@@ -47,6 +48,9 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Column(name = "active", nullable = false)
     private Boolean active;
+
+    @Column(name = "photo")
+    private String photo;
 
     public User(String login, String password, EnumUserRole role) {
         this.login = login;
@@ -109,4 +113,5 @@ public class User extends AbstractEntity implements UserDetails {
     public String getObjectName() {
         return this.login;
     }
+
 }

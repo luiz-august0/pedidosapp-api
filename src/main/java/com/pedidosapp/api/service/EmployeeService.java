@@ -1,6 +1,9 @@
 package com.pedidosapp.api.service;
 
+import com.pedidosapp.api.external.s3.S3StorageService;
 import com.pedidosapp.api.infrastructure.converter.Converter;
+import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.infrastructure.exceptions.enums.EnumUnauthorizedException;
 import com.pedidosapp.api.model.beans.EmployeeBean;
 import com.pedidosapp.api.model.dtos.EmployeeDTO;
 import com.pedidosapp.api.model.entities.Employee;
@@ -8,10 +11,11 @@ import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.enums.EnumUserRole;
 import com.pedidosapp.api.repository.EmployeeRepository;
 import com.pedidosapp.api.repository.UserRepository;
-import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
-import com.pedidosapp.api.service.exceptions.enums.EnumUnauthorizedException;
-import com.pedidosapp.api.service.validators.EmployeeValidator;
-import com.pedidosapp.api.service.validators.UserValidator;
+import com.pedidosapp.api.utils.StringUtil;
+import com.pedidosapp.api.utils.Utils;
+import com.pedidosapp.api.validators.EmployeeValidator;
+import com.pedidosapp.api.validators.MultipartBeanValidator;
+import com.pedidosapp.api.validators.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,14 +31,20 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
     private final EmployeeValidator employeeValidator;
 
+    private final MultipartBeanValidator multipartBeanValidator;
+
     private final UserValidator userValidator;
 
-    EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository) {
+    private final S3StorageService s3StorageService;
+
+    EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository, S3StorageService s3StorageService) {
         super(employeeRepository, new Employee(), new EmployeeDTO(), new EmployeeValidator(employeeRepository));
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
         this.employeeValidator = new EmployeeValidator(employeeRepository);
         this.userValidator = new UserValidator(userRepository);
+        this.multipartBeanValidator = new MultipartBeanValidator();
+        this.s3StorageService = s3StorageService;
     }
 
     @Transactional
@@ -46,6 +56,8 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
         User user = new User(bean.getLogin(), encryptedPassword, EnumUserRole.EMPLOYEE);
 
         user.setActive(bean.getActive());
+
+        resolverUserPhoto(user, bean);
 
         userValidator.validate(user);
 
@@ -77,6 +89,8 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
         user.setActive(bean.getActive());
 
+        resolverUserPhoto(user, bean);
+
         employee.setName(bean.getName());
         employee.setEmail(bean.getEmail());
         employee.setCpf(bean.getCpf());
@@ -99,8 +113,11 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
     @Override
     public ResponseEntity<EmployeeDTO> activateInactivate(Integer id, Boolean active) {
         Employee employee = super.findAndValidate(id);
-        User user = employee.getUser();
+
         employee.setActive(active);
+
+        User user = employee.getUser();
+
         user.setActive(active);
         user.setEmployee(employee);
 
@@ -109,4 +126,19 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
         return ResponseEntity.ok().body(Converter.convertEntityToDTO(employee, EmployeeDTO.class));
     }
+
+    private void resolverUserPhoto(User user, EmployeeBean employeeBean) {
+        if (Utils.isNotEmpty(employeeBean.getPhoto())) {
+            multipartBeanValidator.validate(employeeBean.getPhoto());
+
+            if (StringUtil.isNotNullOrEmpty(user.getPhoto())) {
+                s3StorageService.delete(user.getPhoto().substring(user.getPhoto().lastIndexOf("/") + 1));
+            }
+
+            user.setPhoto(s3StorageService.upload(employeeBean.getPhoto(), true));
+        } else {
+            user.setPhoto(null);
+        }
+    }
+
 }

@@ -8,7 +8,7 @@ import com.pedidosapp.api.model.entities.Stock;
 import com.pedidosapp.api.model.enums.EnumObservationStock;
 import com.pedidosapp.api.model.enums.EnumStatusOrder;
 import com.pedidosapp.api.repository.OrderRepository;
-import com.pedidosapp.api.service.validators.OrderValidator;
+import com.pedidosapp.api.validators.OrderValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

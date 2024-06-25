@@ -1,14 +1,14 @@
 package com.pedidosapp.api.service;
 
 import com.pedidosapp.api.infrastructure.converter.Converter;
+import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceInactiveException;
+import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceNotFoundException;
 import com.pedidosapp.api.infrastructure.specs.SpecificationBuilder;
 import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.model.entities.AbstractEntity;
 import com.pedidosapp.api.model.entities.User;
-import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
-import com.pedidosapp.api.service.exceptions.enums.EnumResourceInactiveException;
-import com.pedidosapp.api.service.exceptions.enums.EnumResourceNotFoundException;
-import com.pedidosapp.api.service.validators.AbstractValidator;
+import com.pedidosapp.api.validators.AbstractValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;

@@ -1,15 +1,15 @@
 package com.pedidosapp.api.service;
 
 import com.pedidosapp.api.infrastructure.converter.Converter;
+import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.infrastructure.exceptions.enums.EnumUnauthorizedException;
 import com.pedidosapp.api.model.dtos.UserDTO;
 import com.pedidosapp.api.model.entities.Employee;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.enums.EnumUserRole;
 import com.pedidosapp.api.repository.UserRepository;
-import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
-import com.pedidosapp.api.service.exceptions.enums.EnumUnauthorizedException;
-import com.pedidosapp.api.service.validators.UserValidator;
 import com.pedidosapp.api.utils.Utils;
+import com.pedidosapp.api.validators.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -5,20 +5,19 @@ import com.pedidosapp.api.service.AbstractService;
 import com.pedidosapp.api.service.ProductService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "product")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Product extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_product", sequenceName = "gen_id_product", allocationSize = 1, schema = "public")
@@ -66,4 +65,5 @@ public class Product extends AbstractEntity {
     public String getObjectName() {
         return this.description;
     }
+
 }

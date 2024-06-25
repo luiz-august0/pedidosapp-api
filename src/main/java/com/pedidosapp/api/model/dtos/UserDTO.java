@@ -3,14 +3,13 @@ package com.pedidosapp.api.model.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.enums.EnumUserRole;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class UserDTO extends AbstractDTO<User> {
+
     private Integer id;
 
     private String login;
@@ -21,4 +20,7 @@ public class UserDTO extends AbstractDTO<User> {
     private EnumUserRole role;
 
     private Boolean active;
+
+    private String photo;
+
 }

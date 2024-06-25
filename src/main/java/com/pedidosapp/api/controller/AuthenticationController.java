@@ -3,7 +3,7 @@ package com.pedidosapp.api.controller;
 import com.pedidosapp.api.controller.interfaces.IAuthenticationController;
 import com.pedidosapp.api.model.beans.TokenBean;
 import com.pedidosapp.api.model.records.AuthenticationRecord;
-import com.pedidosapp.api.service.security.AuthenticationService;
+import com.pedidosapp.api.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

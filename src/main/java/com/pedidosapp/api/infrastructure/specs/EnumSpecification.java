@@ -1,6 +1,6 @@
 package com.pedidosapp.api.infrastructure.specs;
 
-import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
 
 import java.util.Arrays;
 

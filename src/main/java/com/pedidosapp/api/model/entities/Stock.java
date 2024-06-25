@@ -3,19 +3,18 @@ package com.pedidosapp.api.model.entities;
 import com.pedidosapp.api.service.AbstractService;
 import com.pedidosapp.api.service.StockService;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "stock")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Stock extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_stock", sequenceName = "gen_id_stock", allocationSize = 1, schema = "public")
@@ -52,4 +51,5 @@ public class Stock extends AbstractEntity {
     public Class<? extends AbstractService> getServiceClass() {
         return StockService.class;
     }
+
 }
