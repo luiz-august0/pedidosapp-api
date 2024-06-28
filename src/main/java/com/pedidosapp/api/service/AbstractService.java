@@ -4,7 +4,7 @@ import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
 import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceInactiveException;
 import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceNotFoundException;
-import com.pedidosapp.api.infrastructure.specs.SpecificationBuilder;
+import com.pedidosapp.api.infrastructure.specs.builders.SpecificationBuilder;
 import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.model.entities.AbstractEntity;
 import com.pedidosapp.api.model.entities.User;

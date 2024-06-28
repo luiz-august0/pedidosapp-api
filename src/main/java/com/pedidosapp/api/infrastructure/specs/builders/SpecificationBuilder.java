@@ -1,6 +1,7 @@
-package com.pedidosapp.api.infrastructure.specs;
+package com.pedidosapp.api.infrastructure.specs.builders;
 
 import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.infrastructure.specs.enums.EnumSpecification;
 import com.pedidosapp.api.model.entities.AbstractEntity;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.criteria.*;
