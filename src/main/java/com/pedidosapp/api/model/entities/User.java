@@ -1,6 +1,7 @@
 package com.pedidosapp.api.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pedidosapp.api.model.beans.MultipartBean;
 import com.pedidosapp.api.model.enums.EnumUserRole;
 import com.pedidosapp.api.service.AbstractService;
 import com.pedidosapp.api.service.UserService;
@@ -51,6 +52,9 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Column(name = "photo")
     private String photo;
+
+    @Transient
+    private MultipartBean photoMultipart;
 
     public User(String login, String password, EnumUserRole role) {
         this.login = login;

@@ -28,19 +28,23 @@ public class S3StorageService {
     public String upload(MultipartBean multipartBean, Boolean isPublic) {
         File fileObj = FileUtil.convertMultipartBeanToFile(multipartBean);
 
-        String fileName = System.currentTimeMillis() + "_" + multipartBean.getFilename();
+        try {
+            String fileName = System.currentTimeMillis() + "_" + multipartBean.getFilename();
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileObj);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileObj);
 
-        if (isPublic) {
-            putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+            if (isPublic) {
+                putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+            }
+
+            s3Client.putObject(putObjectRequest);
+
+
+            return s3Client.getUrl(bucketName, fileName).toString();
+        } finally {
+            fileObj.delete();
         }
 
-        s3Client.putObject(putObjectRequest);
-
-        fileObj.delete();
-
-        return s3Client.getUrl(bucketName, fileName).toString();
     }
 
     public byte[] download(String fileName) {

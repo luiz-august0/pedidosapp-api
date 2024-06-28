@@ -11,6 +11,7 @@ import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.enums.EnumUserRole;
 import com.pedidosapp.api.repository.EmployeeRepository;
 import com.pedidosapp.api.repository.UserRepository;
+import com.pedidosapp.api.utils.FileUtil;
 import com.pedidosapp.api.utils.StringUtil;
 import com.pedidosapp.api.utils.Utils;
 import com.pedidosapp.api.validators.EmployeeValidator;
@@ -128,12 +129,12 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
     }
 
     private void resolverUserPhoto(User user, EmployeeBean employeeBean) {
+        if (StringUtil.isNotNullOrEmpty(user.getPhoto())) {
+            s3StorageService.delete(FileUtil.getFilenameFromS3Url(user.getPhoto()));
+        }
+
         if (Utils.isNotEmpty(employeeBean.getPhoto())) {
             multipartBeanValidator.validate(employeeBean.getPhoto());
-
-            if (StringUtil.isNotNullOrEmpty(user.getPhoto())) {
-                s3StorageService.delete(user.getPhoto().substring(user.getPhoto().lastIndexOf("/") + 1));
-            }
 
             user.setPhoto(s3StorageService.upload(employeeBean.getPhoto(), true));
         } else {

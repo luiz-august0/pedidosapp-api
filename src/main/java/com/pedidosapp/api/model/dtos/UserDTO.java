@@ -1,8 +1,10 @@
 package com.pedidosapp.api.model.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pedidosapp.api.model.beans.MultipartBean;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.enums.EnumUserRole;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,5 +24,8 @@ public class UserDTO extends AbstractDTO<User> {
     private Boolean active;
 
     private String photo;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private MultipartBean photoMultipart;
 
 }

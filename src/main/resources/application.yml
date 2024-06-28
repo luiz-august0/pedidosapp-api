@@ -31,6 +31,17 @@ spring:
     username: postgres
     password: postgres
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${PEDIDOSAPP_AWS_ACCESS_KEY}
+      secret-key: ${PEDIDOSAPP_AWS_SECRET_KEY}
+    region:
+      static: ${PEDIDOSAPP_AWS_REGION}
+    stack:
+      auto: false
+    s3:
+      bucket-name: ${PEDIDOSAPP_AWS_S3_BUCKET_NAME}
 
 server:
   port: 8080
@@ -95,6 +106,18 @@ spring:
     url: jdbc:postgresql://${PEDIDOSAPP_PG_URL}/${PEDIDOSAPP_PG_DATABASE}
     username: ${PEDIDOSAPP_PG_USERNAME}
     password: ${PEDIDOSAPP_PG_PASSWORD}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${PEDIDOSAPP_AWS_ACCESS_KEY}
+      secret-key: ${PEDIDOSAPP_AWS_SECRET_KEY}
+    region:
+      static: ${PEDIDOSAPP_AWS_REGION}
+    stack:
+      auto: false
+    s3:
+      bucket-name: ${PEDIDOSAPP_AWS_S3_BUCKET_NAME}
 
 server:
   port: 8080

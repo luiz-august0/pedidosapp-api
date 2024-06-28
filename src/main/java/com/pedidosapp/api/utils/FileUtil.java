@@ -35,4 +35,8 @@ public class FileUtil {
         return convertedFile;
     }
 
+    public static String getFilenameFromS3Url(String url) {
+        return url.substring(url.lastIndexOf("/") + 1);
+    }
+
 }

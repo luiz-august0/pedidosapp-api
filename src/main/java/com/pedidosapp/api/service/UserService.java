@@ -1,14 +1,19 @@
 package com.pedidosapp.api.service;
 
+import com.pedidosapp.api.external.s3.S3StorageService;
 import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
 import com.pedidosapp.api.infrastructure.exceptions.enums.EnumUnauthorizedException;
+import com.pedidosapp.api.model.beans.EmployeeBean;
 import com.pedidosapp.api.model.dtos.UserDTO;
 import com.pedidosapp.api.model.entities.Employee;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.enums.EnumUserRole;
 import com.pedidosapp.api.repository.UserRepository;
+import com.pedidosapp.api.utils.FileUtil;
+import com.pedidosapp.api.utils.StringUtil;
 import com.pedidosapp.api.utils.Utils;
+import com.pedidosapp.api.validators.MultipartBeanValidator;
 import com.pedidosapp.api.validators.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -24,11 +29,17 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
 
     private final EmployeeService employeeService;
 
-    public UserService(UserRepository userRepository, EmployeeService employeeService) {
+    private final S3StorageService s3StorageService;
+
+    private final MultipartBeanValidator multipartBeanValidator;
+
+    public UserService(UserRepository userRepository, EmployeeService employeeService, S3StorageService s3StorageService) {
         super(userRepository, new User(), new UserDTO(), new UserValidator(userRepository));
         this.userRepository = userRepository;
         this.validator = new UserValidator(userRepository);
         this.employeeService = employeeService;
+        this.s3StorageService = s3StorageService;
+        this.multipartBeanValidator = new MultipartBeanValidator();
     }
 
     @Override
@@ -39,6 +50,9 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
         validator.validate(user);
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+
+        resolverUserPhoto(user);
+
         userRepository.save(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Converter.convertEntityToDTO(user, UserDTO.class));
@@ -63,6 +77,9 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
         validator.validate(user);
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+
+        resolverUserPhoto(user);
+
         userRepository.save(user);
 
         return ResponseEntity.ok().body(Converter.convertEntityToDTO(user, UserDTO.class));
@@ -88,4 +105,19 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
 
         return ResponseEntity.ok().body(Converter.convertEntityToDTO(user, UserDTO.class));
     }
+
+    private void resolverUserPhoto(User user) {
+        if (StringUtil.isNotNullOrEmpty(user.getPhoto())) {
+            s3StorageService.delete(FileUtil.getFilenameFromS3Url(user.getPhoto()));
+        }
+
+        if (Utils.isNotEmpty(user.getPhotoMultipart())) {
+            multipartBeanValidator.validate(user.getPhotoMultipart());
+
+            user.setPhoto(s3StorageService.upload(user.getPhotoMultipart(), true));
+        } else {
+            user.setPhoto(null);
+        }
+    }
+
 }
