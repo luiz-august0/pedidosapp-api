@@ -74,9 +74,13 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
             user.setLogin("admin");
         }
 
-        validator.validate(user);
+        if (StringUtil.isNotNullOrEmpty(user.getPassword())) {
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        } else {
+            user.setPassword(userOld.getPassword());
+        }
 
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        validator.validate(user);
 
         resolverUserPhoto(user);
 
@@ -104,6 +108,11 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
         }
 
         return ResponseEntity.ok().body(Converter.convertEntityToDTO(user, UserDTO.class));
+    }
+
+    @Transactional
+    public ResponseEntity<UserDTO> updateContextUser(User user) {
+        return this.update(getUserByContext().getId(), user);
     }
 
     private void resolverUserPhoto(User user) {

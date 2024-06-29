@@ -6,6 +6,7 @@ import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -42,12 +43,13 @@ public class Supplier extends AbstractEntity {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
+    @ToString.Exclude
     @JoinTable(
             name = "product_supplier",
             joinColumns = {@JoinColumn(name = "supplier_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")}
     )
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
     private List<Product> products;
 
     @PrePersist

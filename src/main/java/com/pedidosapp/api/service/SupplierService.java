@@ -34,6 +34,7 @@ public class SupplierService extends AbstractService<SupplierRepository, Supplie
         supplierValidator.validate(supplier);
 
         resolverProducts(supplier);
+
         Supplier supplierManaged = supplierRepository.save(supplier);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Converter.convertEntityToDTO(supplierManaged, SupplierDTO.class));
@@ -43,10 +44,13 @@ public class SupplierService extends AbstractService<SupplierRepository, Supplie
     @Override
     public ResponseEntity<SupplierDTO> update(Integer id, Supplier supplier) {
         Supplier supplierManaged = this.findAndValidate(id);
+
         supplier.setId(supplierManaged.getId());
 
         supplierValidator.validate(supplier);
+
         resolverProducts(supplier);
+
         supplierManaged = supplierRepository.save(supplier);
 
         return ResponseEntity.ok().body(Converter.convertEntityToDTO(supplierManaged, SupplierDTO.class));
@@ -64,7 +68,7 @@ public class SupplierService extends AbstractService<SupplierRepository, Supplie
 
                 product = this.findAndValidateActiveGeneric(Product.class, productId, true);
 
-                product.setSuppliers(null);
+                product.getSuppliers().remove(supplier);
 
                 productsManaged.add(product);
             });

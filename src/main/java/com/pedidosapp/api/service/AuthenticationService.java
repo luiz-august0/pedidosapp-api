@@ -123,6 +123,7 @@ public class AuthenticationService {
         tokenBean.setUserId(user.getId());
         tokenBean.setLogin(user.getLogin());
         tokenBean.setRole(user.getRole());
+        tokenBean.setPhoto(user.getPhoto());
 
         if (Utils.isNotEmpty(user.getEmployee())) {
             tokenBean.setEmployee(Converter.convertEntityToDTO(user.getEmployee(), EmployeeDTO.class));

@@ -32,4 +32,10 @@ public class UserController extends AbstractAllController<UserService, UserDTO> 
     public ResponseEntity<UserDTO> activateInactivate(Integer id, Boolean active) {
         return userService.activateInactivate(id, active);
     }
+
+    @Override
+    public ResponseEntity<UserDTO> updateContextUser(UserDTO user) {
+        return userService.updateContextUser(Converter.convertDTOToEntity(user, User.class));
+    }
+
 }
