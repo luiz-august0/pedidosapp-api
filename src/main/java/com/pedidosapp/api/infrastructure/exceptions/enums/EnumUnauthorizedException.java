@@ -11,7 +11,8 @@ public enum EnumUnauthorizedException {
     CNPJ_ALREADY_REGISTERED("CNPJ já cadastrado"),
     EMPTY_ITEMS_ORDER("Não há itens no pedido"),
     ORDER_ALREADY_CLOSED("Pedido já foi fechado"),
-    ADMIN_CANNOT_BE_DEACTIVATED("Usuário admin não pode ser desativado");
+    ADMIN_CANNOT_BE_DEACTIVATED("Usuário admin não pode ser desativado"),
+    USER_ROLE_UNAUTHORIZED("Vocẽ não tem acesso para realizar esta operação");
 
     private final String message;
 

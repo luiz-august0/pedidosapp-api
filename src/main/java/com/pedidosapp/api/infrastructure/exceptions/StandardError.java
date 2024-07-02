@@ -1,4 +1,4 @@
-package com.pedidosapp.api.controller.exceptions;
+package com.pedidosapp.api.infrastructure.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
