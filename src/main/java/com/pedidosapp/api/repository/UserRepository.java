@@ -13,7 +13,7 @@ public interface UserRepository extends
         JpaSpecificationExecutor<User> {
     User findByLogin(String login);
 
-    User findByLoginAndIdIsNot(String login, Integer id);
+    Boolean existsByLoginAndIdIsNot(String login, Integer id);
 
     @Query(value = " " +
             " select schema_name as schema from information_schema.schemata " +

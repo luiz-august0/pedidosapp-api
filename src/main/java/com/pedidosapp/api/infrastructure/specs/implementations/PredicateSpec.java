@@ -9,6 +9,10 @@ public class PredicateSpec {
         return CriteriaBuilder::equal;
     }
 
+    public static IPredicateSpec getPredicateSpecNotEquals() {
+        return CriteriaBuilder::notEqual;
+    }
+
     public static IPredicateSpec getPredicateSpecGreaterOrEquals() {
         return (criteriaBuilder, path, fieldValue) -> criteriaBuilder.greaterThanOrEqualTo(path, (Comparable) fieldValue);
     }

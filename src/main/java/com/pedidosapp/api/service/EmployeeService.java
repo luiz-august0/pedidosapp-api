@@ -2,8 +2,6 @@ package com.pedidosapp.api.service;
 
 import com.pedidosapp.api.external.s3.S3StorageService;
 import com.pedidosapp.api.infrastructure.converter.Converter;
-import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
-import com.pedidosapp.api.infrastructure.exceptions.enums.EnumUnauthorizedException;
 import com.pedidosapp.api.model.beans.EmployeeBean;
 import com.pedidosapp.api.model.dtos.EmployeeDTO;
 import com.pedidosapp.api.model.entities.Employee;
@@ -16,7 +14,6 @@ import com.pedidosapp.api.utils.StringUtil;
 import com.pedidosapp.api.utils.Utils;
 import com.pedidosapp.api.validators.EmployeeValidator;
 import com.pedidosapp.api.validators.MultipartBeanValidator;
-import com.pedidosapp.api.validators.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,41 +25,28 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
     private final EmployeeRepository employeeRepository;
 
-    private final UserRepository userRepository;
-
     private final EmployeeValidator employeeValidator;
 
     private final MultipartBeanValidator multipartBeanValidator;
 
-    private final UserValidator userValidator;
-
     private final S3StorageService s3StorageService;
 
     EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository, S3StorageService s3StorageService) {
-        super(employeeRepository, new Employee(), new EmployeeDTO(), new EmployeeValidator(employeeRepository));
+        super(employeeRepository, new Employee(), new EmployeeDTO(), new EmployeeValidator(employeeRepository, userRepository));
         this.employeeRepository = employeeRepository;
-        this.userRepository = userRepository;
-        this.employeeValidator = new EmployeeValidator(employeeRepository);
-        this.userValidator = new UserValidator(userRepository);
+        this.employeeValidator = new EmployeeValidator(employeeRepository, userRepository);
         this.multipartBeanValidator = new MultipartBeanValidator();
         this.s3StorageService = s3StorageService;
     }
 
     @Transactional
     public ResponseEntity<EmployeeDTO> insert(EmployeeBean bean) {
-        if (userRepository.findByLogin(bean.getLogin()) != null)
-            throw new ApplicationGenericsException(EnumUnauthorizedException.USER_ALREADY_REGISTERED);
-
         String encryptedPassword = new BCryptPasswordEncoder().encode(bean.getPassword());
         User user = new User(bean.getLogin(), encryptedPassword, EnumUserRole.EMPLOYEE);
 
         user.setActive(bean.getActive());
 
         resolverUserPhoto(user, bean);
-
-        userValidator.validate(user);
-
-        userRepository.save(user);
 
         Employee employee = new Employee(null, bean.getName(), bean.getEmail(), bean.getCpf(), bean.getContact(), user, bean.getActive());
 
@@ -73,25 +57,30 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Transactional
     public ResponseEntity<EmployeeDTO> update(Integer id, EmployeeBean bean) {
-        Employee employee = super.findAndValidate(id);
-        User user = employee.getUser();
+        Employee oldEmployee = super.findAndValidate(id);
 
-        if ((bean.getLogin() != null) && (!bean.getLogin().equals(user.getLogin()))) {
-            if (userRepository.findByLogin(bean.getLogin()) != null)
-                throw new ApplicationGenericsException(EnumUnauthorizedException.USER_ALREADY_REGISTERED);
+        Employee employee = new Employee();
 
-            user.setLogin(bean.getLogin());
-        }
+        User user = new User();
+
+        user.setRole(oldEmployee.getUser().getRole());
+        user.setId(oldEmployee.getUser().getId());
+        user.setPhoto(oldEmployee.getUser().getPhoto());
+
+        user.setLogin(bean.getLogin());
+        user.setActive(bean.getActive());
 
         if (bean.getPassword() != null) {
             user.setPassword(new BCryptPasswordEncoder().encode(bean.getPassword()));
+        } else {
+            user.setPassword(oldEmployee.getUser().getPassword());
         }
-
-        user.setActive(bean.getActive());
 
         resolverUserPhoto(user, bean);
 
+        employee.setId(oldEmployee.getId());
         employee.setName(bean.getName());
         employee.setEmail(bean.getEmail());
         employee.setCpf(bean.getCpf());
@@ -101,11 +90,7 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
         employeeValidator.validate(employee);
 
-        userValidator.validate(user);
-
         employeeRepository.save(employee);
-
-        userRepository.save(user);
 
         return ResponseEntity.ok().body(Converter.convertEntityToDTO(employee, EmployeeDTO.class));
     }
@@ -116,13 +101,8 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
         Employee employee = super.findAndValidate(id);
 
         employee.setActive(active);
+        employee.getUser().setActive(active);
 
-        User user = employee.getUser();
-
-        user.setActive(active);
-        user.setEmployee(employee);
-
-        userRepository.save(user);
         employeeRepository.save(employee);
 
         return ResponseEntity.ok().body(Converter.convertEntityToDTO(employee, EmployeeDTO.class));

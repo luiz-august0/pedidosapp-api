@@ -5,8 +5,13 @@ import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.UserDTO;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController extends AbstractAllController<UserService, UserDTO> implements IUserController {
@@ -34,8 +39,17 @@ public class UserController extends AbstractAllController<UserService, UserDTO> 
     }
 
     @Override
-    public ResponseEntity<UserDTO> updateContextUser(UserDTO user) {
-        return userService.updateContextUser(Converter.convertDTOToEntity(user, User.class));
+    public List<UserDTO> findAllFiltered(Pageable pageable, Map filters) {
+        filters.put("id:<>:", userService.getUserByContext().getId());
+
+        return super.findAllFiltered(pageable, filters);
+    }
+
+    @Override
+    public Page<UserDTO> findAllFilteredAndPageable(Pageable pageable, Map filters) {
+        filters.put("id:<>:", userService.getUserByContext().getId());
+
+        return super.findAllFilteredAndPageable(pageable, filters);
     }
 
 }

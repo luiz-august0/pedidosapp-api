@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 public enum EnumSpecification {
     EQUALS("EQUALS", "::", PredicateSpec.getPredicateSpecEquals()),
+    NOTEQUALS("NOTEQUALS", ":<>:", PredicateSpec.getPredicateSpecNotEquals()),
     LIKE("LIKE", ":like:", PredicateSpec.getPredicateSpecLike()),
     GREATEROREQUALS("GREATEROREQUALS", ":>:", PredicateSpec.getPredicateSpecGreaterOrEquals()),
     LESSOREQUALS("LESSOREQUALS", ":<:", PredicateSpec.getPredicateSpecLessOrEquals());

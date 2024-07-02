@@ -31,14 +31,10 @@ public class UserValidator extends AbstractValidator {
     @Override
     public void validate(Object object) {
         User user = (User) object;
+
         super.validate(object);
 
-        if (Utils.isEmpty(user.getId())) {
-            if (userRepository.findByLogin(user.getLogin()) != null)
-                throw new ApplicationGenericsException(EnumUnauthorizedException.USER_ALREADY_REGISTERED);
-        } else {
-            if (userRepository.findByLoginAndIdIsNot(user.getLogin(), user.getId()) != null)
-                throw new ApplicationGenericsException(EnumUnauthorizedException.USER_ALREADY_REGISTERED);
-        }
+        if (userRepository.existsByLoginAndIdIsNot(user.getLogin(), Utils.nvl(user.getId(), 0)))
+            throw new ApplicationGenericsException(EnumUnauthorizedException.USER_ALREADY_REGISTERED);
     }
 }

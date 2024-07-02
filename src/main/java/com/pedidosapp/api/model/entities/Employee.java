@@ -34,7 +34,7 @@ public class Employee extends AbstractEntity {
     private String contact;
 
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
     @Column(name = "active", nullable = false)

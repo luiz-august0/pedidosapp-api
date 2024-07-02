@@ -4,6 +4,7 @@ import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException
 import com.pedidosapp.api.infrastructure.exceptions.enums.EnumUnauthorizedException;
 import com.pedidosapp.api.model.entities.Employee;
 import com.pedidosapp.api.repository.EmployeeRepository;
+import com.pedidosapp.api.repository.UserRepository;
 import com.pedidosapp.api.utils.CpfUtil;
 import com.pedidosapp.api.utils.StringUtil;
 import com.pedidosapp.api.utils.Utils;
@@ -17,8 +18,11 @@ public class EmployeeValidator extends AbstractValidator {
 
     private final EmployeeRepository employeeRepository;
 
-    public EmployeeValidator(EmployeeRepository employeeRepository) {
+    private final UserValidator userValidator;
+
+    public EmployeeValidator(EmployeeRepository employeeRepository, UserRepository userRepository) {
         this.employeeRepository = employeeRepository;
+        this.userValidator = new UserValidator(userRepository);
 
         try {
             List<RequiredField> requiredFields = new ArrayList<>();
@@ -48,5 +52,7 @@ public class EmployeeValidator extends AbstractValidator {
             if (employeeRepository.existsByCpfAndIdIsNot(cpf, Utils.nvl(employee.getId(), 0)))
                 throw new ApplicationGenericsException(EnumUnauthorizedException.CPF_ALREADY_REGISTERED);
         }
+
+        userValidator.validate(employee.getUser());
     }
 }

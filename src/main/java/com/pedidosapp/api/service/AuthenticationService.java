@@ -8,6 +8,7 @@ import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceNotFoundEx
 import com.pedidosapp.api.infrastructure.exceptions.enums.EnumUnauthorizedException;
 import com.pedidosapp.api.model.beans.TokenBean;
 import com.pedidosapp.api.model.dtos.EmployeeDTO;
+import com.pedidosapp.api.model.dtos.UserDTO;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.records.AuthenticationRecord;
 import com.pedidosapp.api.repository.UserRepository;
@@ -15,6 +16,7 @@ import com.pedidosapp.api.utils.StringUtil;
 import com.pedidosapp.api.utils.TokenUtil;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -116,6 +118,11 @@ public class AuthenticationService {
         TokenBean tokenBean = makeTokenBeanFromUser(user, TokenUtil.getTokenFromRequest(request), tokenService.generateRefreshToken(user));
 
         return ResponseEntity.ok(tokenBean);
+    }
+
+    @Transactional
+    public ResponseEntity<UserDTO> updateSessionUser(User user) {
+        return userService.updateContextUser(user);
     }
 
     private TokenBean makeTokenBeanFromUser(User user, String accessToken, String refreshToken) {

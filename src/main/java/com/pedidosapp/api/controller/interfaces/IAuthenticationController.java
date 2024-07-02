@@ -1,13 +1,11 @@
 package com.pedidosapp.api.controller.interfaces;
 
 import com.pedidosapp.api.model.beans.TokenBean;
+import com.pedidosapp.api.model.dtos.UserDTO;
 import com.pedidosapp.api.model.records.AuthenticationRecord;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import static com.pedidosapp.api.constants.Paths.prefixPath;
 
@@ -21,6 +19,9 @@ public interface IAuthenticationController {
 
     @PostMapping("/refresh-token")
     ResponseEntity<TokenBean> refreshToken(@RequestBody TokenBean tokenBeanRequest);
+
+    @PutMapping("/user")
+    ResponseEntity<UserDTO> updateSessionUser(@RequestBody UserDTO user);
 
     @GetMapping
     ResponseEntity<TokenBean> getSession();
