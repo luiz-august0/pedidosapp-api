@@ -1,9 +1,12 @@
 package com.pedidosapp.api.model.entities;
 
 import com.pedidosapp.api.model.enums.EnumStatusOrder;
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.OrderService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -11,13 +14,11 @@ import java.util.List;
 
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "orders")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Order extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_order", sequenceName = "gen_id_order", allocationSize = 1, schema = "public")
@@ -93,4 +94,10 @@ public class Order extends AbstractEntity {
     public String getPortugueseClassName() {
         return "pedido";
     }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return OrderService.class;
+    }
+
 }

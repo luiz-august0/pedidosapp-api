@@ -1,14 +1,13 @@
 package com.pedidosapp.api.model.dtos;
 
 import com.pedidosapp.api.model.entities.Employee;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class EmployeeDTO extends AbstractDTO<Employee> {
+
     private Integer id;
 
     private String name;
@@ -22,4 +21,5 @@ public class EmployeeDTO extends AbstractDTO<Employee> {
     private UserDTO user;
 
     private Boolean active;
+
 }

@@ -1,7 +1,7 @@
 package com.pedidosapp.api.utils;
 
-import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
-import com.pedidosapp.api.service.exceptions.enums.EnumUnauthorizedException;
+import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.infrastructure.exceptions.enums.EnumUnauthorizedException;
 
 public class CpfUtil {
 

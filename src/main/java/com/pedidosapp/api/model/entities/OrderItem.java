@@ -1,19 +1,20 @@
 package com.pedidosapp.api.model.entities;
 
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.OrderItemService;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "order_item")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class OrderItem extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_order_item", sequenceName = "gen_id_order_item", allocationSize = 1, schema = "public")
@@ -47,4 +48,10 @@ public class OrderItem extends AbstractEntity {
     public String getPortugueseClassName() {
         return "item do pedido";
     }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return OrderItemService.class;
+    }
+
 }

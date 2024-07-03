@@ -1,20 +1,21 @@
 package com.pedidosapp.api.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.CustomerService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "customer")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Customer extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_customer", sequenceName = "gen_id_customer", allocationSize = 1, schema = "public")
@@ -53,4 +54,15 @@ public class Customer extends AbstractEntity {
     public String getPortugueseClassName() {
         return "cliente";
     }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return CustomerService.class;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.name;
+    }
+
 }

@@ -1,7 +1,10 @@
 package com.pedidosapp.api.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pedidosapp.api.model.beans.MultipartBean;
 import com.pedidosapp.api.model.enums.EnumUserRole;
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.UserService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -22,6 +25,7 @@ import java.util.List;
 @Table(name = "users")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class User extends AbstractEntity implements UserDetails {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_user", sequenceName = "gen_id_user", allocationSize = 1, schema = "public")
@@ -43,12 +47,14 @@ public class User extends AbstractEntity implements UserDetails {
     @JsonIgnore
     private Employee employee;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    List<Order> orders;
-
     @Column(name = "active", nullable = false)
     private Boolean active;
+
+    @Column(name = "photo")
+    private String photo;
+
+    @Transient
+    private MultipartBean photoMultipart;
 
     public User(String login, String password, EnumUserRole role) {
         this.login = login;
@@ -101,4 +107,15 @@ public class User extends AbstractEntity implements UserDetails {
     public String getPortugueseClassName() {
         return "usuário";
     }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return UserService.class;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.login;
+    }
+
 }

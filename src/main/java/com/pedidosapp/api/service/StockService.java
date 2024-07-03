@@ -3,7 +3,7 @@ package com.pedidosapp.api.service;
 import com.pedidosapp.api.model.dtos.StockDTO;
 import com.pedidosapp.api.model.entities.Stock;
 import com.pedidosapp.api.repository.StockRepository;
-import com.pedidosapp.api.service.validators.StockValidator;
+import com.pedidosapp.api.validators.StockValidator;
 import org.springframework.stereotype.Service;
 
 @Service

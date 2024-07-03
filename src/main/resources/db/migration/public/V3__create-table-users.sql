@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     password varchar(255) NOT NULL,
     role varchar(30) NOT NULL,
     active BOOLEAN NOT NULL DEFAULT TRUE,
+    photo varchar(255),
     schema varchar(100)
 );
 

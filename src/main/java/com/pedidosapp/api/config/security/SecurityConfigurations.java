@@ -14,14 +14,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
+
     @Autowired
-    SecurityFilter securityFilter;
+    private SecurityFilter securityFilter;
+
+    @Autowired
+    private AuthenticationEntryPoint authenticationEntryPoint;
 
     @Value(Paths.prefixPath)
     private String prefixPath;
@@ -30,10 +35,10 @@ public class SecurityConfigurations {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         final String[] blockedEndpointsEmployees = {
                 ISupplierController.PATH.replace(Paths.prefixPath, prefixPath) + "/**",
-                IUserController.PATH.replace(Paths.prefixPath, prefixPath)  + "/**",
-                ICustomerController.PATH.replace(Paths.prefixPath, prefixPath)  + "/**",
-                IProductController.PATH.replace(Paths.prefixPath, prefixPath)  + "/**",
-                IEmployeeController.PATH.replace(Paths.prefixPath, prefixPath)  + "/**"
+                IUserController.PATH.replace(Paths.prefixPath, prefixPath) + "/**",
+                ICustomerController.PATH.replace(Paths.prefixPath, prefixPath) + "/**",
+                IProductController.PATH.replace(Paths.prefixPath, prefixPath) + "/**",
+                IEmployeeController.PATH.replace(Paths.prefixPath, prefixPath) + "/**"
         };
 
         return httpSecurity
@@ -56,6 +61,9 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.PATCH, blockedEndpointsEmployees).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
+                    httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(authenticationEntryPoint);
+                })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

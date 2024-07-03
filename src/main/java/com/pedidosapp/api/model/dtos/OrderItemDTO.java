@@ -1,23 +1,24 @@
 package com.pedidosapp.api.model.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pedidosapp.api.infrastructure.annotations.ObjectFieldsOnly;
 import com.pedidosapp.api.model.entities.OrderItem;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class OrderItemDTO extends AbstractDTO<OrderItem> {
+
     private Integer id;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private OrderDTO order;
 
+    @ObjectFieldsOnly({"id", "description", "unit", "unitaryValue"})
     private ProductDTO product;
 
     private BigDecimal quantity;
@@ -29,4 +30,5 @@ public class OrderItemDTO extends AbstractDTO<OrderItem> {
     private BigDecimal discount;
 
     private BigDecimal addition;
+
 }

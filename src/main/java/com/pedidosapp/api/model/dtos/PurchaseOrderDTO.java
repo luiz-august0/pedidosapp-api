@@ -2,19 +2,17 @@ package com.pedidosapp.api.model.dtos;
 
 import com.pedidosapp.api.model.entities.PurchaseOrder;
 import com.pedidosapp.api.model.enums.EnumStatusOrder;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class PurchaseOrderDTO extends AbstractDTO<PurchaseOrder> {
+
     private Integer id;
 
     private CustomerDTO customer;
@@ -33,6 +31,6 @@ public class PurchaseOrderDTO extends AbstractDTO<PurchaseOrder> {
 
     private Date inclusionDate;
 
-    List<PurchaseOrderItemDTO> items;
+    private List<PurchaseOrderItemDTO> items;
 
 }

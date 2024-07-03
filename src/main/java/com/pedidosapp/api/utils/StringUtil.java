@@ -52,7 +52,7 @@ public class StringUtil {
         }
         return true;
     }
-    
+
     public static String formatMessage(String messagePattern, Object... argumentsMessage) {
         return MessageFormat.format(messagePattern, argumentsMessage);
     }
@@ -121,23 +121,23 @@ public class StringUtil {
         return null;
     }
 
-    public static String capitalizeAndShorthand(final String nomeCliente) {
-        final String capitalize = StringUtils.capitalize(nomeCliente);
+    public static String capitalizeAndShorthand(final String value) {
+        final String capitalize = StringUtils.capitalize(value);
         return StringUtil.firstWord(capitalize);
     }
 
-    public static String formataMoeda(Number valor) {
-        String vlrFormatado;
+    public static String formataMoeda(Number value) {
+        String formattedValue;
         NumberFormat formatter = new DecimalFormat("#,##0.00");
 
         try {
-            vlrFormatado = formatter.format(valor);
+            formattedValue = formatter.format(value);
         } catch (IllegalArgumentException ex) {
             log.error(ex);
-            vlrFormatado = formatter.format(0.0d);
+            formattedValue = formatter.format(0.0d);
         }
 
-        return vlrFormatado;
+        return formattedValue;
     }
 
     public static String listToString(List list, String delimiter, String prefix, String suffix) {

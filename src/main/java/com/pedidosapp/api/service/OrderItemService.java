@@ -7,9 +7,9 @@ import com.pedidosapp.api.model.entities.OrderItem;
 import com.pedidosapp.api.model.entities.Product;
 import com.pedidosapp.api.repository.OrderItemRepository;
 import com.pedidosapp.api.repository.OrderRepository;
-import com.pedidosapp.api.service.validators.OrderItemValidator;
-import com.pedidosapp.api.service.validators.OrderValidator;
 import com.pedidosapp.api.utils.Utils;
+import com.pedidosapp.api.validators.OrderItemValidator;
+import com.pedidosapp.api.validators.OrderValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +41,7 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
 
     @Override
     @Transactional
-    public ResponseEntity<OrderItemDTO> insert(OrderItemDTO orderItemDTO) {
-        OrderItem orderItem = Converter.convertDTOToEntity(orderItemDTO, OrderItem.class);
+    public ResponseEntity<OrderItemDTO> insert(OrderItem orderItem) {
         prepareInsertOrUpdate(orderItem);
         orderItemValidator.validate(orderItem);
 
@@ -54,9 +53,8 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
 
     @Override
     @Transactional
-    public ResponseEntity<OrderItemDTO> update(Integer id, OrderItemDTO orderItemDTO) {
+    public ResponseEntity<OrderItemDTO> update(Integer id, OrderItem orderItem) {
         OrderItem orderItemOld = super.findAndValidate(id);
-        OrderItem orderItem = Converter.convertDTOToEntity(orderItemDTO, OrderItem.class);
         orderItem.setId(orderItemOld.getId());
         orderItem.setProduct(orderItemOld.getProduct());
 
@@ -86,7 +84,7 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
     }
 
     private void prepareInsertOrUpdate(OrderItem orderItem) {
-        Product product = productService.findAndValidateActive(orderItem.getProduct().getId());
+        Product product = productService.findAndValidateActive(orderItem.getProduct().getId(), true);
 
         orderItem.setProduct(product);
         orderItem.setUnitaryValue(product.getUnitaryValue());
@@ -96,7 +94,7 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
     }
 
     private void calculateAndUpdateOrder(OrderItem orderItem) {
-        Order order = (Order) this.findAndValidateGeneric(orderRepository, new Order().getPortugueseClassName(), orderItem.getOrder().getId());
+        Order order = this.findAndValidateGeneric(Order.class, orderItem.getOrder().getId());
 
         order.setAmount(order.calculateAmount());
         order.setDiscount(order.calculateDiscount());

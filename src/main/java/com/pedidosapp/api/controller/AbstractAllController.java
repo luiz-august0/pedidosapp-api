@@ -1,6 +1,7 @@
 package com.pedidosapp.api.controller;
 
 import com.pedidosapp.api.controller.interfaces.IAbstractAllController;
+import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.service.AbstractService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public abstract class AbstractAllController
     }
 
     public ResponseEntity<DTO> insert(DTO dto) {
-        return service.insert(dto);
+        return service.insert(Converter.convertDTOToEntity(dto, service.entity.getClass()));
     }
 
     public ResponseEntity<DTO> activateInactivate(Integer id, Boolean active) {
@@ -28,6 +29,6 @@ public abstract class AbstractAllController
     }
 
     public ResponseEntity<DTO> update(Integer id, DTO dto) {
-        return service.update(id, dto);
+        return service.update(id, Converter.convertDTOToEntity(dto, service.entity.getClass()));
     }
 }

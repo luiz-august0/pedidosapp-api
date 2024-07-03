@@ -1,22 +1,23 @@
 package com.pedidosapp.api.model.entities;
 
 import com.pedidosapp.api.model.enums.EnumUnitProduct;
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.ProductService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "product")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Product extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_product", sequenceName = "gen_id_product", allocationSize = 1, schema = "public")
@@ -36,8 +37,13 @@ public class Product extends AbstractEntity {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductSupplier> productSuppliers;
+    @JoinTable(
+            name = "product_supplier",
+            joinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "supplier_id", referencedColumnName = "id")}
+    )
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+    private List<Supplier> suppliers;
 
     @PrePersist
     @PreUpdate
@@ -49,4 +55,15 @@ public class Product extends AbstractEntity {
     public String getPortugueseClassName() {
         return "produto";
     }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return ProductService.class;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.description;
+    }
+
 }

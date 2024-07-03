@@ -8,7 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface EmployeeRepository extends
         JpaRepository<Employee, Integer>,
         PagingAndSortingRepository<Employee, Integer>,
-        JpaSpecificationExecutor<Employee>
-{
+        JpaSpecificationExecutor<Employee> {
+    Boolean existsByCpfAndIdIsNot(String cpf, Integer id);
 
 }

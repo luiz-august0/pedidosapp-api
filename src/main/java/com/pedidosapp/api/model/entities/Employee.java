@@ -1,18 +1,20 @@
 package com.pedidosapp.api.model.entities;
 
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.EmployeeService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Table(name = "employee")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Employee extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_employee", sequenceName = "gen_id_employee", allocationSize = 1, schema = "public")
@@ -32,7 +34,7 @@ public class Employee extends AbstractEntity {
     private String contact;
 
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
     @Column(name = "active", nullable = false)
@@ -48,4 +50,15 @@ public class Employee extends AbstractEntity {
     public String getPortugueseClassName() {
         return "funcionário";
     }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return EmployeeService.class;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.name;
+    }
+
 }

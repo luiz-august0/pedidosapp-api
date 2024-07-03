@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class EmployeeBean {
+
     private String login;
 
     private String password;
@@ -15,4 +16,9 @@ public class EmployeeBean {
     private String cpf;
 
     private String contact;
+
+    private Boolean active;
+
+    private MultipartBean photo;
+
 }

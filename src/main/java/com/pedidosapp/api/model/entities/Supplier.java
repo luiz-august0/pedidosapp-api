@@ -1,17 +1,21 @@
 package com.pedidosapp.api.model.entities;
 
+import com.pedidosapp.api.service.AbstractService;
+import com.pedidosapp.api.service.SupplierService;
 import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Table(name = "supplier")
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class Supplier extends AbstractEntity {
+
     @Id
     @Column(name = "id")
     @SequenceGenerator(name = "id_supplier", sequenceName = "gen_id_supplier", allocationSize = 1, schema = "public")
@@ -39,6 +43,15 @@ public class Supplier extends AbstractEntity {
     @Column(name = "active", nullable = false)
     private Boolean active;
 
+    @ToString.Exclude
+    @JoinTable(
+            name = "product_supplier",
+            joinColumns = {@JoinColumn(name = "supplier_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")}
+    )
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+    private List<Product> products;
+
     @PrePersist
     @PreUpdate
     protected void onPersist() {
@@ -49,4 +62,15 @@ public class Supplier extends AbstractEntity {
     public String getPortugueseClassName() {
         return "fornecedor";
     }
+
+    @Override
+    public Class<? extends AbstractService> getServiceClass() {
+        return SupplierService.class;
+    }
+
+    @Override
+    public String getObjectName() {
+        return this.name;
+    }
+
 }

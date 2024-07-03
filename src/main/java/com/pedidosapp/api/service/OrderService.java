@@ -2,14 +2,13 @@ package com.pedidosapp.api.service;
 
 import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.OrderDTO;
-import com.pedidosapp.api.model.dtos.OrderItemDTO;
-import com.pedidosapp.api.model.dtos.StockDTO;
 import com.pedidosapp.api.model.entities.Order;
 import com.pedidosapp.api.model.entities.OrderItem;
+import com.pedidosapp.api.model.entities.Stock;
 import com.pedidosapp.api.model.enums.EnumObservationStock;
 import com.pedidosapp.api.model.enums.EnumStatusOrder;
 import com.pedidosapp.api.repository.OrderRepository;
-import com.pedidosapp.api.service.validators.OrderValidator;
+import com.pedidosapp.api.validators.OrderValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +45,7 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
 
     @Override
     @Transactional
-    public ResponseEntity<OrderDTO> insert(OrderDTO orderDTO) {
-        Order order = Converter.convertDTOToEntity(orderDTO, Order.class);
-
+    public ResponseEntity<OrderDTO> insert(Order order) {
         Order orderManaged = prepareInsert(order);
         orderRepository.save(orderManaged);
 
@@ -65,7 +62,7 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
 
         order = orderRepository.save(order);
 
-        moveStockOrderItems(order.getItems().stream().map(item -> Converter.convertEntityToDTO(item, OrderItemDTO.class)).toList());
+        moveStockOrderItems(order.getItems());
 
         return ResponseEntity.status(HttpStatus.OK).body(Converter.convertEntityToDTO(order, OrderDTO.class));
     }
@@ -77,8 +74,8 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
         order.setAmount(BigDecimal.ZERO);
         order.setDiscount(BigDecimal.ZERO);
         order.setAddition(BigDecimal.ZERO);
-        order.setCustomer(customerService.findAndValidateActive(order.getCustomer().getId()));
-        order.setUser(userService.findAndValidateActive(getUserByContext().getId()));
+        order.setCustomer(customerService.findAndValidateActive(order.getCustomer().getId(), true));
+        order.setUser(userService.findAndValidateActive(getUserByContext().getId(), true));
         order.setStatus(EnumStatusOrder.OPEN);
 
         orderValidator.validate(order);
@@ -102,16 +99,16 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
         return orderManaged;
     }
 
-    private void moveStockOrderItems(List<OrderItemDTO> items) {
+    private void moveStockOrderItems(List<OrderItem> items) {
         items.forEach(item -> {
-            StockDTO stock = new StockDTO();
-            OrderDTO order = item.getOrder();
+            Stock stock = new Stock();
+            Order order = item.getOrder();
 
             stock.setOrder(order);
             stock.setProduct(item.getProduct());
             stock.setEntry(Boolean.FALSE);
             stock.setQuantity(item.getQuantity());
-            stock.setObservation(EnumObservationStock.ORDER.getObservation() + " " + order.getId());
+            stock.setObservation(EnumObservationStock.ORDER.getObservation() + " #" + order.getId());
 
             stockService.insert(stock);
         });

@@ -16,6 +16,8 @@ public class TokenBean {
 
     private EnumUserRole role;
 
+    private String photo;
+
     private EmployeeDTO employee;
 
     private String accessToken;

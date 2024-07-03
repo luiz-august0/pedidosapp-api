@@ -1,14 +1,16 @@
 package com.pedidosapp.api.service;
 
 import com.pedidosapp.api.infrastructure.converter.Converter;
-import com.pedidosapp.api.infrastructure.specs.SpecificationBuilder;
+import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
+import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceInactiveException;
+import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceNotFoundException;
+import com.pedidosapp.api.infrastructure.specs.builders.SpecificationBuilder;
 import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.model.entities.AbstractEntity;
 import com.pedidosapp.api.model.entities.User;
-import com.pedidosapp.api.service.exceptions.ApplicationGenericsException;
-import com.pedidosapp.api.service.exceptions.enums.EnumResourceInactiveException;
-import com.pedidosapp.api.service.exceptions.enums.EnumResourceNotFoundException;
-import com.pedidosapp.api.service.validators.AbstractValidator;
+import com.pedidosapp.api.validators.AbstractValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,11 +37,24 @@ public abstract class AbstractService
 
     private final Validator validator;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     AbstractService(Repository repository, Entity entity, DTO dto, Validator validator) {
         this.repository = repository;
         this.entity = entity;
         this.dto = dto;
         this.validator = validator;
+    }
+
+    public <Service extends AbstractService> Service getServiceBean(Class<? extends AbstractEntity> entityClass) {
+        try {
+            Class<? extends AbstractService> serviceClass = entityClass.getDeclaredConstructor().newInstance().getServiceClass();
+
+            return (Service) applicationContext.getBean(serviceClass);
+        } catch (Exception e) {
+            throw new ApplicationGenericsException(e.getMessage());
+        }
     }
 
     public List<DTO> findAll() {
@@ -64,27 +79,7 @@ public abstract class AbstractService
         return (Entity) object.get();
     }
 
-    public DTO findDTOAndValidate(Integer id) {
-        Optional object = repository.findById(id);
-
-        if (object.isEmpty()) {
-            throw new ApplicationGenericsException(EnumResourceNotFoundException.RESOURCE_NOT_FOUND, entity.getPortugueseClassName(), id);
-        }
-
-        return (DTO) Converter.convertEntityToDTO((Entity) object.get(), dto.getClass());
-    }
-
-    public Object findAndValidateGeneric(JpaRepository genericRepository, String portugueseClassName, Integer id) {
-        Optional object = genericRepository.findById(id);
-
-        if (object.isEmpty()) {
-            throw new ApplicationGenericsException(EnumResourceNotFoundException.RESOURCE_NOT_FOUND, portugueseClassName, id);
-        }
-
-        return object.get();
-    }
-
-    public Entity findAndValidateActive(Integer id) {
+    public Entity findAndValidateActive(Integer id, Boolean returnObjectName) {
         Entity entityObject = this.findAndValidate(id);
 
         try {
@@ -93,7 +88,15 @@ public abstract class AbstractService
             Boolean active = (Boolean) field.get(entityObject);
 
             if (active.equals(false)) {
-                throw new ApplicationGenericsException(EnumResourceInactiveException.RESOURCE_INACTIVE, entity.getPortugueseClassName(), id);
+                if (returnObjectName) {
+                    throw new ApplicationGenericsException(
+                            EnumResourceInactiveException.RESOURCE_INACTIVE,
+                            entity.getPortugueseClassName(),
+                            entityObject.getObjectName()
+                    );
+                } else {
+                    throw new ApplicationGenericsException(EnumResourceInactiveException.RESOURCE_INACTIVE, entity.getPortugueseClassName(), id);
+                }
             }
         } catch (NoSuchFieldException e) {
             throw new ApplicationGenericsException("Classe " + entity.getClass().getName() + " não tem campo active");
@@ -104,8 +107,21 @@ public abstract class AbstractService
         return entityObject;
     }
 
-    public ResponseEntity<DTO> insert(DTO object) {
-        Entity entityObject = (Entity) Converter.convertDTOToEntity(object, entity.getClass());
+    public DTO findDTOAndValidate(Integer id) {
+        Entity entityObject = this.findAndValidate(id);
+
+        return (DTO) Converter.convertEntityToDTO(entityObject, dto.getClass());
+    }
+
+    public <GenericEntity extends AbstractEntity> GenericEntity findAndValidateGeneric(Class<? extends AbstractEntity> entityClass, Integer id) {
+        return (GenericEntity) getServiceBean(entityClass).findAndValidate(id);
+    }
+
+    public <GenericEntity extends AbstractEntity> GenericEntity findAndValidateActiveGeneric(Class<? extends AbstractEntity> entityClass, Integer id, Boolean returnObjectName) {
+        return (GenericEntity) getServiceBean(entityClass).findAndValidateActive(id, returnObjectName);
+    }
+
+    public ResponseEntity<DTO> insert(Entity entityObject) {
         validator.validate(entityObject);
 
         repository.save(entityObject);
@@ -129,21 +145,20 @@ public abstract class AbstractService
         return ResponseEntity.ok().body((DTO) Converter.convertEntityToDTO(entityObject, dto.getClass()));
     }
 
-    public ResponseEntity<DTO> update(Integer id, DTO object) {
+    public ResponseEntity<DTO> update(Integer id, Entity entityObject) {
         this.findAndValidate(id);
 
         try {
-            Class<?> objectClass = object.getClass();
+            Class<?> objectClass = entityObject.getClass();
             Field field = objectClass.getDeclaredField("id");
             field.setAccessible(true);
-            field.set(object, id);
+            field.set(entityObject, id);
         } catch (NoSuchFieldException e) {
             throw new ApplicationGenericsException("Classe " + entity.getClass().getName() + " não tem campo ID");
         } catch (IllegalAccessException e) {
             throw new ApplicationGenericsException("Não foi possível acessar o campo id da classe " + entity.getClass().getName());
         }
 
-        Entity entityObject = (Entity) Converter.convertDTOToEntity(object, entity.getClass());
         validator.validate(entityObject);
 
         repository.save(entityObject);
