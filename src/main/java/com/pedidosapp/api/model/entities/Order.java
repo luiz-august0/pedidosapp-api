@@ -49,7 +49,7 @@ public class Order extends AbstractEntity {
     @Column(nullable = false, name = "inclusion_date")
     private Date inclusionDate;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<OrderItem> items;
 
     public BigDecimal calculateAmount() {
