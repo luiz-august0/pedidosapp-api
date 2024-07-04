@@ -14,7 +14,7 @@ public interface IOrderController extends IAbstractAllGetController<OrderDTO> {
     @PostMapping
     ResponseEntity<OrderDTO> insert(@RequestBody OrderDTO orderDTO);
 
-    @PutMapping("/close/{id}")
+    @PutMapping("/{id}/close")
     ResponseEntity<OrderDTO> closeOrder(@PathVariable("id") Integer id);
 
 }

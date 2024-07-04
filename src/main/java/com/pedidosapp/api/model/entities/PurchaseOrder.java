@@ -3,7 +3,6 @@ package com.pedidosapp.api.model.entities;
 import com.pedidosapp.api.model.enums.EnumStatusOrder;
 import com.pedidosapp.api.service.AbstractService;
 import com.pedidosapp.api.service.PurchaseOrderService;
-import com.pedidosapp.api.utils.Utils;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -57,42 +56,22 @@ public class PurchaseOrder extends AbstractEntity {
     List<PurchaseOrderItem> items;
 
     public BigDecimal calculateAmount() {
-        BigDecimal amount = BigDecimal.ZERO;
-
-        for (PurchaseOrderItem item : getItems()) {
-            if (Utils.isNotEmpty(item.getAmount())) {
-                amount = amount.add(item.getAmount());
-            }
-        }
-
-        return amount;
+        return getItems().stream()
+                .map(PurchaseOrderItem::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public BigDecimal calculateDiscount() {
-        BigDecimal discount = BigDecimal.ZERO;
-
-        for (PurchaseOrderItem item : getItems()) {
-            if (Utils.isNotEmpty(item.getDiscount())) {
-                discount = discount.add(item.getDiscount());
-            }
-        }
-
-        return discount;
+        return getItems().stream()
+                .map(PurchaseOrderItem::getDiscount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public BigDecimal calculateAddition() {
-        BigDecimal addition = BigDecimal.ZERO;
-
-        for (PurchaseOrderItem item : getItems()) {
-            if (Utils.isNotEmpty(item.getAddition())) {
-                addition = addition.add(item.getAddition());
-            }
-        }
-
-
-        return addition;
+        return getItems().stream()
+                .map(PurchaseOrderItem::getAddition)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
 
     @Override
     public String getPortugueseClassName() {
