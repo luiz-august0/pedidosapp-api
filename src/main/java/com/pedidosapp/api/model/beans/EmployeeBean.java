@@ -19,6 +19,8 @@ public class EmployeeBean {
 
     private Boolean active;
 
-    private MultipartBean photo;
+    private String photo;
+
+    private MultipartBean photoMultipart;
 
 }

@@ -109,16 +109,16 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
     }
 
     private void resolverUserPhoto(User user, EmployeeBean employeeBean) {
-        if (StringUtil.isNotNullOrEmpty(user.getPhoto())) {
+        if (StringUtil.isNullOrEmpty(employeeBean.getPhoto()) && StringUtil.isNotNullOrEmpty(user.getPhoto())) {
             s3StorageService.delete(FileUtil.getFilenameFromS3Url(user.getPhoto()));
+
+            user.setPhoto(null);
         }
 
-        if (Utils.isNotEmpty(employeeBean.getPhoto())) {
-            multipartBeanValidator.validate(employeeBean.getPhoto());
+        if (Utils.isNotEmpty(employeeBean.getPhotoMultipart())) {
+            multipartBeanValidator.validate(employeeBean.getPhotoMultipart());
 
-            user.setPhoto(s3StorageService.upload(employeeBean.getPhoto(), true));
-        } else {
-            user.setPhoto(null);
+            user.setPhoto(s3StorageService.upload(employeeBean.getPhotoMultipart(), true));
         }
     }
 

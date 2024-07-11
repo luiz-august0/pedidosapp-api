@@ -43,7 +43,7 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
-        resolverUserPhoto(user);
+        resolverUserPhoto(user, null);
 
         validator.validate(user);
 
@@ -87,7 +87,7 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
             user.setPassword(userOld.getPassword());
         }
 
-        resolverUserPhoto(user);
+        resolverUserPhoto(user, userOld.getPhoto());
 
         validator.validate(user);
 
@@ -103,17 +103,17 @@ public class UserService extends AbstractService<UserRepository, User, UserDTO, 
         return this.update(getUserByContext().getId(), user);
     }
 
-    private void resolverUserPhoto(User user) {
-        if (StringUtil.isNotNullOrEmpty(user.getPhoto())) {
-            s3StorageService.delete(FileUtil.getFilenameFromS3Url(user.getPhoto()));
+    private void resolverUserPhoto(User user, String oldPhoto) {
+        if (StringUtil.isNullOrEmpty(user.getPhoto()) && StringUtil.isNotNullOrEmpty(oldPhoto)) {
+            s3StorageService.delete(FileUtil.getFilenameFromS3Url(oldPhoto));
+
+            user.setPhoto(null);
         }
 
         if (Utils.isNotEmpty(user.getPhotoMultipart())) {
             multipartBeanValidator.validate(user.getPhotoMultipart());
 
             user.setPhoto(s3StorageService.upload(user.getPhotoMultipart(), true));
-        } else {
-            user.setPhoto(null);
         }
     }
 
