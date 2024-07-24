@@ -9,7 +9,7 @@ import com.pedidosapp.api.validators.classes.RequiredField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StockValidator extends AbstractValidator {
+public class StockValidator extends AbstractValidator<Stock> {
     public StockValidator() {
         try {
             List<RequiredField> requiredFields = new ArrayList<>();
@@ -31,4 +31,5 @@ public class StockValidator extends AbstractValidator {
             throw new ApplicationGenericsException(e.getMessage());
         }
     }
+
 }

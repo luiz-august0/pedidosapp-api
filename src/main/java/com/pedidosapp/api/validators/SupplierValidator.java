@@ -14,7 +14,7 @@ import com.pedidosapp.api.validators.classes.RequiredField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SupplierValidator extends AbstractValidator {
+public class SupplierValidator extends AbstractValidator<Supplier> {
 
     private final SupplierRepository supplierRepository;
 
@@ -36,12 +36,11 @@ public class SupplierValidator extends AbstractValidator {
     }
 
     @Override
-    public void validate(Object object) {
-        Supplier supplier = (Supplier) object;
+    public void validate(Supplier supplier) {
         String cpf = supplier.getCpf();
         String cnpj = supplier.getCnpj();
 
-        super.validate(object);
+        super.validate(supplier);
 
         if (StringUtil.isNotNullOrEmpty(cpf)) {
             CpfUtil.validate(cpf);
@@ -57,4 +56,5 @@ public class SupplierValidator extends AbstractValidator {
                 throw new ApplicationGenericsException(EnumUnauthorizedException.CNPJ_ALREADY_REGISTERED);
         }
     }
+
 }

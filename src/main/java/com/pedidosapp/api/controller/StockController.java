@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StockController extends AbstractAllController<StockService, StockDTO> implements IStockController {
     StockController(StockService service) {
-        super(service);
+        super(service, new StockDTO());
     }
 }

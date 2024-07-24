@@ -10,7 +10,7 @@ import com.pedidosapp.api.validators.classes.RequiredField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderValidator extends AbstractValidator {
+public class OrderValidator extends AbstractValidator<Order> {
     public OrderValidator() {
         try {
             List<RequiredField> requiredFields = new ArrayList<>();
@@ -37,4 +37,5 @@ public class OrderValidator extends AbstractValidator {
             throw new ApplicationGenericsException(EnumUnauthorizedException.ORDER_ALREADY_CLOSED);
         }
     }
+
 }

@@ -1,7 +1,5 @@
 package com.pedidosapp.api.service;
 
-import com.pedidosapp.api.infrastructure.converter.Converter;
-import com.pedidosapp.api.model.dtos.PurchaseOrderDTO;
 import com.pedidosapp.api.model.entities.PurchaseOrder;
 import com.pedidosapp.api.model.entities.PurchaseOrderItem;
 import com.pedidosapp.api.model.entities.Stock;
@@ -11,8 +9,6 @@ import com.pedidosapp.api.repository.PurchaseOrderRepository;
 import com.pedidosapp.api.utils.Utils;
 import com.pedidosapp.api.validators.PurchaseOrderValidator;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class PurchaseOrderService extends AbstractService<PurchaseOrderRepository, PurchaseOrder, PurchaseOrderDTO, PurchaseOrderValidator> {
+public class PurchaseOrderService extends AbstractService<PurchaseOrderRepository, PurchaseOrder, PurchaseOrderValidator> {
     private final PurchaseOrderRepository purchaseOrderRepository;
 
     private final PurchaseOrderValidator purchaseOrderValidator;
@@ -35,7 +31,7 @@ public class PurchaseOrderService extends AbstractService<PurchaseOrderRepositor
     private final StockService stockService;
 
     PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository, PurchaseOrderItemService purchaseOrderItemService, CustomerService customerService, UserService userService, StockService stockService) {
-        super(purchaseOrderRepository, new PurchaseOrder(), new PurchaseOrderDTO(), new PurchaseOrderValidator());
+        super(purchaseOrderRepository, new PurchaseOrder(), new PurchaseOrderValidator());
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.purchaseOrderItemService = purchaseOrderItemService;
         this.customerService = customerService;
@@ -46,15 +42,15 @@ public class PurchaseOrderService extends AbstractService<PurchaseOrderRepositor
 
     @Override
     @Transactional
-    public ResponseEntity<PurchaseOrderDTO> insert(PurchaseOrder purchaseOrder) {
+    public PurchaseOrder insert(PurchaseOrder purchaseOrder) {
         PurchaseOrder purchaseOrderManaged = prepareInsert(purchaseOrder);
         purchaseOrderRepository.save(purchaseOrderManaged);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Converter.convertEntityToDTO(purchaseOrderManaged, PurchaseOrderDTO.class));
+        return purchaseOrderManaged;
     }
 
     @Transactional
-    public ResponseEntity<PurchaseOrderDTO> closePurchaseOrder(Integer id) {
+    public PurchaseOrder closePurchaseOrder(Integer id) {
         PurchaseOrder purchaseOrder = this.findAndValidate(id);
 
         purchaseOrderValidator.validate(purchaseOrder);
@@ -65,7 +61,7 @@ public class PurchaseOrderService extends AbstractService<PurchaseOrderRepositor
 
         moveStockPurchaseOrderItems(purchaseOrder.getItems());
 
-        return ResponseEntity.status(HttpStatus.OK).body(Converter.convertEntityToDTO(purchaseOrder, PurchaseOrderDTO.class));
+        return purchaseOrder;
     }
 
     private PurchaseOrder prepareInsert(PurchaseOrder purchaseOrder) {
@@ -114,4 +110,5 @@ public class PurchaseOrderService extends AbstractService<PurchaseOrderRepositor
             stockService.insert(stock);
         });
     }
+
 }

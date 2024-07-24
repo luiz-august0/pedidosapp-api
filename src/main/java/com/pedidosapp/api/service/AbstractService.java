@@ -1,11 +1,9 @@
 package com.pedidosapp.api.service;
 
-import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.infrastructure.exceptions.ApplicationGenericsException;
 import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceInactiveException;
 import com.pedidosapp.api.infrastructure.exceptions.enums.EnumResourceNotFoundException;
 import com.pedidosapp.api.infrastructure.specs.builders.SpecificationBuilder;
-import com.pedidosapp.api.model.dtos.AbstractDTO;
 import com.pedidosapp.api.model.entities.AbstractEntity;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.validators.AbstractValidator;
@@ -16,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.lang.reflect.Field;
@@ -27,23 +23,20 @@ import java.util.Optional;
 
 
 public abstract class AbstractService
-        <Repository extends JpaRepository & PagingAndSortingRepository & JpaSpecificationExecutor,
-                Entity extends AbstractEntity, DTO extends AbstractDTO<Entity>, Validator extends AbstractValidator> {
+        <Repository extends JpaRepository<Entity, Integer> & PagingAndSortingRepository<Entity, Integer> & JpaSpecificationExecutor<Entity>,
+                Entity extends AbstractEntity, Validator extends AbstractValidator<Entity>> {
     private final Repository repository;
 
     public final Entity entity;
-
-    public final DTO dto;
 
     private final Validator validator;
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    AbstractService(Repository repository, Entity entity, DTO dto, Validator validator) {
+    AbstractService(Repository repository, Entity entity, Validator validator) {
         this.repository = repository;
         this.entity = entity;
-        this.dto = dto;
         this.validator = validator;
     }
 
@@ -57,16 +50,16 @@ public abstract class AbstractService
         }
     }
 
-    public List<DTO> findAll() {
-        return Converter.convertListEntityToDTO(repository.findAll(), dto.getClass());
+    public List<Entity> findAll() {
+        return repository.findAll();
     }
 
-    public List<DTO> findAllFiltered(Pageable pageable, Map<String, Object> filters) {
-        return Converter.convertListEntityToDTO(repository.findAll(SpecificationBuilder.toSpec(filters), pageable.getSort()), dto.getClass());
+    public List<Entity> findAllFiltered(Pageable pageable, Map<String, Object> filters) {
+        return repository.findAll(SpecificationBuilder.toSpec(filters), pageable.getSort());
     }
 
-    public Page<DTO> findAllFilteredAndPageable(Pageable pageable, Map<String, Object> filters) {
-        return Converter.convertPageEntityToDTO(repository.findAll(SpecificationBuilder.toSpec(filters), pageable), dto.getClass());
+    public Page<Entity> findAllFilteredAndPageable(Pageable pageable, Map<String, Object> filters) {
+        return repository.findAll(SpecificationBuilder.toSpec(filters), pageable);
     }
 
     public Entity findAndValidate(Integer id) {
@@ -107,12 +100,6 @@ public abstract class AbstractService
         return entityObject;
     }
 
-    public DTO findDTOAndValidate(Integer id) {
-        Entity entityObject = this.findAndValidate(id);
-
-        return (DTO) Converter.convertEntityToDTO(entityObject, dto.getClass());
-    }
-
     public <GenericEntity extends AbstractEntity> GenericEntity findAndValidateGeneric(Class<? extends AbstractEntity> entityClass, Integer id) {
         return (GenericEntity) getServiceBean(entityClass).findAndValidate(id);
     }
@@ -121,14 +108,13 @@ public abstract class AbstractService
         return (GenericEntity) getServiceBean(entityClass).findAndValidateActive(id, returnObjectName);
     }
 
-    public ResponseEntity<DTO> insert(Entity entityObject) {
+    public Entity insert(Entity entityObject) {
         validator.validate(entityObject);
 
-        repository.save(entityObject);
-        return ResponseEntity.status(HttpStatus.CREATED).body((DTO) Converter.convertEntityToDTO(entityObject, dto.getClass()));
+        return repository.save(entityObject);
     }
 
-    public ResponseEntity<DTO> activateInactivate(Integer id, Boolean active) {
+    public Entity activateInactivate(Integer id, Boolean active) {
         Entity entityObject = this.findAndValidate(id);
 
         try {
@@ -141,11 +127,10 @@ public abstract class AbstractService
             throw new ApplicationGenericsException("Não foi possível acessar o campo active da classe " + entity.getClass().getName());
         }
 
-        repository.save(entityObject);
-        return ResponseEntity.ok().body((DTO) Converter.convertEntityToDTO(entityObject, dto.getClass()));
+        return repository.save(entityObject);
     }
 
-    public ResponseEntity<DTO> update(Integer id, Entity entityObject) {
+    public Entity update(Integer id, Entity entityObject) {
         this.findAndValidate(id);
 
         try {
@@ -161,11 +146,11 @@ public abstract class AbstractService
 
         validator.validate(entityObject);
 
-        repository.save(entityObject);
-        return ResponseEntity.ok().body((DTO) Converter.convertEntityToDTO(entityObject, dto.getClass()));
+        return repository.save(entityObject);
     }
 
     public User getUserByContext() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
 }

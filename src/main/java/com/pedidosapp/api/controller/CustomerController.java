@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CustomerController extends AbstractAllController<CustomerService, CustomerDTO> implements ICustomerController {
     CustomerController(CustomerService service) {
-        super(service);
+        super(service, new CustomerDTO());
     }
 }

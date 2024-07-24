@@ -1,7 +1,5 @@
 package com.pedidosapp.api.service;
 
-import com.pedidosapp.api.infrastructure.converter.Converter;
-import com.pedidosapp.api.model.dtos.OrderItemDTO;
 import com.pedidosapp.api.model.entities.Order;
 import com.pedidosapp.api.model.entities.OrderItem;
 import com.pedidosapp.api.model.entities.Product;
@@ -11,14 +9,12 @@ import com.pedidosapp.api.utils.Utils;
 import com.pedidosapp.api.validators.OrderItemValidator;
 import com.pedidosapp.api.validators.OrderValidator;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
-public class OrderItemService extends AbstractService<OrderItemRepository, OrderItem, OrderItemDTO, OrderItemValidator> {
+public class OrderItemService extends AbstractService<OrderItemRepository, OrderItem, OrderItemValidator> {
 
     private final OrderItemRepository orderItemRepository;
 
@@ -31,7 +27,7 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
     private final OrderRepository orderRepository;
 
     OrderItemService(OrderItemRepository orderItemRepository, ProductService productService, OrderRepository orderRepository) {
-        super(orderItemRepository, new OrderItem(), new OrderItemDTO(), new OrderItemValidator());
+        super(orderItemRepository, new OrderItem(), new OrderItemValidator());
         this.orderItemRepository = orderItemRepository;
         this.productService = productService;
         this.orderRepository = orderRepository;
@@ -41,19 +37,19 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
 
     @Override
     @Transactional
-    public ResponseEntity<OrderItemDTO> insert(OrderItem orderItem) {
+    public OrderItem insert(OrderItem orderItem) {
         prepareInsertOrUpdate(orderItem);
         orderItemValidator.validate(orderItem);
 
         OrderItem orderItemManaged = orderItemRepository.save(orderItem);
         calculateAndUpdateOrder(orderItemManaged);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Converter.convertEntityToDTO(orderItemManaged, OrderItemDTO.class));
+        return orderItemManaged;
     }
 
     @Override
     @Transactional
-    public ResponseEntity<OrderItemDTO> update(Integer id, OrderItem orderItem) {
+    public OrderItem update(Integer id, OrderItem orderItem) {
         OrderItem orderItemOld = super.findAndValidate(id);
         orderItem.setId(orderItemOld.getId());
         orderItem.setProduct(orderItemOld.getProduct());
@@ -64,7 +60,7 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
         OrderItem orderItemManaged = orderItemRepository.save(orderItem);
         calculateAndUpdateOrder(orderItemManaged);
 
-        return ResponseEntity.ok().body(Converter.convertEntityToDTO(orderItemManaged, OrderItemDTO.class));
+        return orderItemManaged;
     }
 
     @Transactional
@@ -104,4 +100,5 @@ public class OrderItemService extends AbstractService<OrderItemRepository, Order
 
         orderRepository.save(order);
     }
+
 }

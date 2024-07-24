@@ -8,6 +8,7 @@ import static com.pedidosapp.api.constants.Paths.prefixPath;
 
 @RequestMapping(IProductController.PATH)
 public interface IProductController extends IAbstractAllController<ProductDTO> {
+
     String PATH = prefixPath + "/product";
 
 }

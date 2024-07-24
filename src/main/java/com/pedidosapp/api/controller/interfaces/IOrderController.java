@@ -1,7 +1,7 @@
 package com.pedidosapp.api.controller.interfaces;
 
 import com.pedidosapp.api.model.dtos.OrderDTO;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import static com.pedidosapp.api.constants.Paths.prefixPath;
@@ -11,10 +11,11 @@ import static com.pedidosapp.api.constants.Paths.prefixPath;
 public interface IOrderController extends IAbstractAllGetController<OrderDTO> {
     String PATH = prefixPath + "/order";
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    ResponseEntity<OrderDTO> insert(@RequestBody OrderDTO orderDTO);
+    OrderDTO insert(@RequestBody OrderDTO orderDTO);
 
     @PutMapping("/{id}/close")
-    ResponseEntity<OrderDTO> closeOrder(@PathVariable("id") Integer id);
+    OrderDTO closeOrder(@PathVariable("id") Integer id);
 
 }

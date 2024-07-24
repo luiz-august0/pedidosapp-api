@@ -7,7 +7,7 @@ import com.pedidosapp.api.validators.classes.RequiredField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductValidator extends AbstractValidator {
+public class ProductValidator extends AbstractValidator<Product> {
     public ProductValidator() {
         try {
             List<RequiredField> requiredFields = new ArrayList<>();

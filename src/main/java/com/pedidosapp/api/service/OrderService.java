@@ -1,7 +1,5 @@
 package com.pedidosapp.api.service;
 
-import com.pedidosapp.api.infrastructure.converter.Converter;
-import com.pedidosapp.api.model.dtos.OrderDTO;
 import com.pedidosapp.api.model.entities.Order;
 import com.pedidosapp.api.model.entities.OrderItem;
 import com.pedidosapp.api.model.entities.Stock;
@@ -10,8 +8,6 @@ import com.pedidosapp.api.model.enums.EnumStatusOrder;
 import com.pedidosapp.api.repository.OrderRepository;
 import com.pedidosapp.api.validators.OrderValidator;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class OrderService extends AbstractService<OrderRepository, Order, OrderDTO, OrderValidator> {
+public class OrderService extends AbstractService<OrderRepository, Order, OrderValidator> {
     private final OrderRepository orderRepository;
 
     private final OrderValidator orderValidator;
@@ -34,7 +30,7 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
     private final StockService stockService;
 
     OrderService(OrderRepository orderRepository, OrderItemService orderItemService, CustomerService customerService, UserService userService, StockService stockService) {
-        super(orderRepository, new Order(), new OrderDTO(), new OrderValidator());
+        super(orderRepository, new Order(), new OrderValidator());
         this.orderRepository = orderRepository;
         this.orderItemService = orderItemService;
         this.customerService = customerService;
@@ -45,15 +41,15 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
 
     @Override
     @Transactional
-    public ResponseEntity<OrderDTO> insert(Order order) {
+    public Order insert(Order order) {
         Order orderManaged = prepareInsert(order);
         orderRepository.save(orderManaged);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Converter.convertEntityToDTO(orderManaged, OrderDTO.class));
+        return orderManaged;
     }
 
     @Transactional
-    public ResponseEntity<OrderDTO> closeOrder(Integer id) {
+    public Order closeOrder(Integer id) {
         Order order = this.findAndValidate(id);
 
         orderValidator.validate(order);
@@ -64,7 +60,7 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
 
         moveStockOrderItems(order.getItems());
 
-        return ResponseEntity.status(HttpStatus.OK).body(Converter.convertEntityToDTO(order, OrderDTO.class));
+        return order;
     }
 
     private Order prepareInsert(Order order) {
@@ -113,4 +109,5 @@ public class OrderService extends AbstractService<OrderRepository, Order, OrderD
             stockService.insert(stock);
         });
     }
+
 }

@@ -1,9 +1,7 @@
 package com.pedidosapp.api.service;
 
 import com.pedidosapp.api.external.s3.S3StorageService;
-import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.beans.EmployeeBean;
-import com.pedidosapp.api.model.dtos.EmployeeDTO;
 import com.pedidosapp.api.model.entities.Employee;
 import com.pedidosapp.api.model.entities.User;
 import com.pedidosapp.api.model.enums.EnumUserRole;
@@ -15,13 +13,11 @@ import com.pedidosapp.api.utils.Utils;
 import com.pedidosapp.api.validators.EmployeeValidator;
 import com.pedidosapp.api.validators.MultipartBeanValidator;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmployeeService extends AbstractService<EmployeeRepository, Employee, EmployeeDTO, EmployeeValidator> {
+public class EmployeeService extends AbstractService<EmployeeRepository, Employee, EmployeeValidator> {
 
     private final EmployeeRepository employeeRepository;
 
@@ -32,7 +28,7 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
     private final S3StorageService s3StorageService;
 
     EmployeeService(EmployeeRepository employeeRepository, UserRepository userRepository, S3StorageService s3StorageService) {
-        super(employeeRepository, new Employee(), new EmployeeDTO(), new EmployeeValidator(employeeRepository, userRepository));
+        super(employeeRepository, new Employee(), new EmployeeValidator(employeeRepository, userRepository));
         this.employeeRepository = employeeRepository;
         this.employeeValidator = new EmployeeValidator(employeeRepository, userRepository);
         this.multipartBeanValidator = new MultipartBeanValidator();
@@ -40,7 +36,7 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
     }
 
     @Transactional
-    public ResponseEntity<EmployeeDTO> insert(EmployeeBean bean) {
+    public Employee insert(EmployeeBean bean) {
         String encryptedPassword = new BCryptPasswordEncoder().encode(bean.getPassword());
         User user = new User(bean.getLogin(), encryptedPassword, EnumUserRole.EMPLOYEE);
 
@@ -54,11 +50,11 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
         employeeRepository.save(employee);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return employee;
     }
 
     @Transactional
-    public ResponseEntity<EmployeeDTO> update(Integer id, EmployeeBean bean) {
+    public Employee update(Integer id, EmployeeBean bean) {
         Employee oldEmployee = super.findAndValidate(id);
 
         Employee employee = new Employee();
@@ -92,12 +88,12 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
         employeeRepository.save(employee);
 
-        return ResponseEntity.ok().body(Converter.convertEntityToDTO(employee, EmployeeDTO.class));
+        return employee;
     }
 
     @Transactional
     @Override
-    public ResponseEntity<EmployeeDTO> activateInactivate(Integer id, Boolean active) {
+    public Employee activateInactivate(Integer id, Boolean active) {
         Employee employee = super.findAndValidate(id);
 
         employee.setActive(active);
@@ -105,7 +101,7 @@ public class EmployeeService extends AbstractService<EmployeeRepository, Employe
 
         employeeRepository.save(employee);
 
-        return ResponseEntity.ok().body(Converter.convertEntityToDTO(employee, EmployeeDTO.class));
+        return employee;
     }
 
     private void resolverUserPhoto(User user, EmployeeBean employeeBean) {

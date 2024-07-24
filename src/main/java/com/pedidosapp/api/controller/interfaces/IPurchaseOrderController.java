@@ -1,7 +1,6 @@
 package com.pedidosapp.api.controller.interfaces;
 
 import com.pedidosapp.api.model.dtos.PurchaseOrderDTO;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.pedidosapp.api.constants.Paths.prefixPath;
@@ -12,9 +11,9 @@ public interface IPurchaseOrderController extends IAbstractAllGetController<Purc
     String PATH = prefixPath + "/purchase-order";
 
     @PostMapping
-    ResponseEntity<PurchaseOrderDTO> insert(@RequestBody PurchaseOrderDTO orderDTO);
+    PurchaseOrderDTO insert(@RequestBody PurchaseOrderDTO orderDTO);
 
     @PutMapping("/close/{id}")
-    ResponseEntity<PurchaseOrderDTO> closePurchaseOrder(@PathVariable("id") Integer id);
+    PurchaseOrderDTO closePurchaseOrder(@PathVariable("id") Integer id);
 
 }

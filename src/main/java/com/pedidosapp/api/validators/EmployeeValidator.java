@@ -14,7 +14,7 @@ import com.pedidosapp.api.validators.classes.RequiredField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeeValidator extends AbstractValidator {
+public class EmployeeValidator extends AbstractValidator<Employee> {
 
     private final EmployeeRepository employeeRepository;
 
@@ -40,11 +40,10 @@ public class EmployeeValidator extends AbstractValidator {
     }
 
     @Override
-    public void validate(Object object) {
-        Employee employee = (Employee) object;
+    public void validate(Employee employee) {
         String cpf = employee.getCpf();
 
-        super.validate(object);
+        super.validate(employee);
 
         if (StringUtil.isNotNullOrEmpty(cpf)) {
             CpfUtil.validate(cpf);
@@ -55,4 +54,5 @@ public class EmployeeValidator extends AbstractValidator {
 
         userValidator.validate(employee.getUser());
     }
+
 }

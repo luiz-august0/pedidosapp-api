@@ -14,7 +14,7 @@ import com.pedidosapp.api.validators.classes.RequiredField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerValidator extends AbstractValidator {
+public class CustomerValidator extends AbstractValidator<Customer> {
     private final CustomerRepository customerRepository;
 
     public CustomerValidator(CustomerRepository customerRepository) {
@@ -35,12 +35,11 @@ public class CustomerValidator extends AbstractValidator {
     }
 
     @Override
-    public void validate(Object object) {
-        Customer customer = (Customer) object;
+    public void validate(Customer customer) {
         String cpf = customer.getCpf();
         String cnpj = customer.getCnpj();
 
-        super.validate(object);
+        super.validate(customer);
 
         if (StringUtil.isNotNullOrEmpty(cpf)) {
             CpfUtil.validate(cpf);

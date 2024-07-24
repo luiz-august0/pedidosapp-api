@@ -5,7 +5,6 @@ import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.SupplierDTO;
 import com.pedidosapp.api.model.entities.Supplier;
 import com.pedidosapp.api.service.SupplierService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -14,17 +13,18 @@ public class SupplierController extends AbstractAllController<SupplierService, S
     private final SupplierService supplierService;
 
     SupplierController(SupplierService service) {
-        super(service);
+        super(service, new SupplierDTO());
         this.supplierService = service;
     }
 
     @Override
-    public ResponseEntity<SupplierDTO> insert(SupplierDTO supplier) {
-        return supplierService.insert(Converter.convertDTOToEntity(supplier, Supplier.class));
+    public SupplierDTO insert(SupplierDTO supplier) {
+        return Converter.convertEntityToDTO(supplierService.insert(Converter.convertDTOToEntity(supplier, Supplier.class)), SupplierDTO.class);
     }
 
     @Override
-    public ResponseEntity<SupplierDTO> update(Integer id, SupplierDTO supplier) {
-        return supplierService.update(id, Converter.convertDTOToEntity(supplier, Supplier.class));
+    public SupplierDTO update(Integer id, SupplierDTO supplier) {
+        return Converter.convertEntityToDTO(supplierService.update(id, Converter.convertDTOToEntity(supplier, Supplier.class)), SupplierDTO.class);
     }
+
 }

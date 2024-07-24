@@ -5,7 +5,6 @@ import com.pedidosapp.api.infrastructure.converter.Converter;
 import com.pedidosapp.api.model.dtos.OrderDTO;
 import com.pedidosapp.api.model.entities.Order;
 import com.pedidosapp.api.service.OrderService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -13,17 +12,18 @@ public class OrderController extends AbstractAllGetController<OrderService, Orde
     private final OrderService service;
 
     OrderController(OrderService service) {
-        super(service);
+        super(service, new OrderDTO());
         this.service = service;
     }
 
     @Override
-    public ResponseEntity<OrderDTO> insert(OrderDTO orderDTO) {
-        return service.insert(Converter.convertDTOToEntity(orderDTO, Order.class));
+    public OrderDTO insert(OrderDTO orderDTO) {
+        return Converter.convertEntityToDTO(service.insert(Converter.convertDTOToEntity(orderDTO, Order.class)), OrderDTO.class);
     }
 
     @Override
-    public ResponseEntity<OrderDTO> closeOrder(Integer id) {
-        return service.closeOrder(id);
+    public OrderDTO closeOrder(Integer id) {
+        return Converter.convertEntityToDTO(service.closeOrder(id), OrderDTO.class);
     }
+
 }
